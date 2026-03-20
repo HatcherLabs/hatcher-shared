@@ -12,7 +12,6 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
-    "prepare": "npm run build",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
