@@ -97,7 +97,10 @@ var FEATURE_CATALOG = [
   { key: "account.agents.20", name: "20 Agents", description: "Up to 20 active agents", usdPrice: 55, type: "subscription", framework: "account", category: "Account" },
   { key: "account.agents.unlimited", name: "Unlimited Agents", description: "Unlimited agents (shared containers)", usdPrice: 180, type: "subscription", framework: "account", category: "Account" },
   { key: "account.support.priority", name: "Priority Support", description: "Priority support", usdPrice: 8, type: "subscription", framework: "account", category: "Account" },
-  { key: "account.analytics", name: "Analytics", description: "Cross-agent analytics dashboard", usdPrice: 8, type: "subscription", framework: "account", category: "Account" }
+  { key: "account.analytics", name: "Analytics", description: "Cross-agent analytics dashboard", usdPrice: 8, type: "subscription", framework: "account", category: "Account" },
+  // --- API Tiers ---
+  { key: "account.api.pro", name: "API Pro", description: "Programmatic API: 10,000 requests/day", usdPrice: 15, type: "subscription", framework: "account", category: "API" },
+  { key: "account.api.business", name: "API Business", description: "Programmatic API: 100,000 requests/day", usdPrice: 45, type: "subscription", framework: "account", category: "API" }
 ];
 function getFeaturesByFramework(framework) {
   return FEATURE_CATALOG.filter((f) => f.framework === framework);

@@ -287,7 +287,9 @@ export type AccountFeature =
   | 'account.agents.20'
   | 'account.agents.unlimited'
   | 'account.support.priority'
-  | 'account.analytics';
+  | 'account.analytics'
+  | 'account.api.pro'
+  | 'account.api.business';
 
 // Union of all feature keys
 export type FeatureKey =
