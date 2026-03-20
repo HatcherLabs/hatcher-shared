@@ -90,23 +90,33 @@ interface OpenClawAgents {
     defaults?: Partial<OpenClawAgentDef>;
     list?: OpenClawAgentDef[];
 }
-interface OpenClawChannelAccount {
+/** Per-channel behavior settings (stored in config_json.channelSettings) */
+interface ChannelSettings {
+    dmPolicy?: 'open' | 'allowlist' | 'disabled';
+    groupPolicy?: 'open' | 'mention' | 'disabled';
+    allowFrom?: string[];
+    groupAllowFrom?: string[];
+    streaming?: 'partial' | 'full' | 'off';
+}
+/**
+ * OpenClaw channel config — flat structure.
+ * Credentials and settings live directly on the channel object.
+ */
+interface OpenClawChannel {
+    enabled: boolean;
+    dmPolicy?: string;
+    groupPolicy?: string;
+    allowFrom?: string[];
+    groupAllowFrom?: string[];
+    streaming?: string;
     botToken?: string;
     token?: string;
     appToken?: string;
-    enabled?: boolean;
-    dmPolicy?: string;
-    allowFrom?: string[];
-    streaming?: string;
+    account?: string;
     [key: string]: unknown;
 }
-interface OpenClawChannel {
-    enabled: boolean;
-    accounts?: Record<string, OpenClawChannelAccount>;
-    groupPolicy?: string;
-    [key: string]: unknown;
-}
-type OpenClawChannelName = 'telegram' | 'discord' | 'whatsapp' | 'slack' | 'signal' | 'imessage' | 'irc' | 'google-chat' | 'teams' | 'mattermost' | 'line' | 'matrix' | 'nostr' | 'twitch' | 'webchat';
+/** All valid OpenClaw channel identifiers */
+type OpenClawChannelName = 'telegram' | 'discord' | 'whatsapp' | 'slack' | 'signal' | 'imessage' | 'irc' | 'googlechat' | 'msteams' | 'mattermost' | 'line' | 'matrix' | 'nostr' | 'twitch' | 'feishu' | 'nextcloud-talk' | 'synology-chat' | 'tlon' | 'zalo' | 'bluebubbles';
 interface OpenClawBinding {
     agentId: string;
     match: {
@@ -121,12 +131,17 @@ interface OpenClawHooks {
     path?: string;
     allowedAgentIds?: string[];
 }
+/** OpenClaw TTS config — flat provider keys (e.g. `elevenlabs: { apiKey }`) */
 interface OpenClawTTS {
     provider?: string;
     voice?: string;
-    providers?: Record<string, {
+    elevenlabs?: {
         apiKey?: string;
-    }>;
+    };
+    openai?: {
+        apiKey?: string;
+    };
+    edge?: Record<string, unknown>;
 }
 interface OpenClawMessages {
     tts?: OpenClawTTS;
@@ -591,4 +606,4 @@ declare const PAID_TIER: {
     };
 };
 
-export { ACCOUNT_AGENT_LIMITS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_TEMPLATES, ALL_FEATURE_KEYS, type AccountFeature, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFeaturePublic, type AgentFile, type AgentFramework, type AgentPublic, type AgentStatus, type AgentTemplateId, type ApiErr, type ApiOk, type ApiResponse, type AuthChallenge, type AuthToken, BUNDLES, type BYOKConfig, type BYOKProvider, type BYOKProviderMeta, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type BundleDef, CREDIT_PACKS, type ChatMessage, type CreditPack, FEATURE_CATALOG, FRAMEWORKS, FREE_TIER_LIMITS, FREE_TIER_MAX_AGENTS, type FeatureKey, type FeaturePricing, type FeatureType, type Framework, type FrameworkMeta, HOSTED_CREDIT_MODELS, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type LlmUsage, type OpenClawAgentDef, type OpenClawAgents, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelAccount, type OpenClawChannelName, type OpenClawConfig, type OpenClawCron, type OpenClawGateway, type OpenClawGatewayAuth, type OpenClawHooks, type OpenClawMessages, type OpenClawModelProvider, type OpenClawModelRef, type OpenClawModels, type OpenClawNativeConfig, type OpenClawPlatformFeature, type OpenClawResourceFeature, type OpenClawSession, type OpenClawSkillsConfig, type OpenClawSkillsFeature, type OpenClawSubscriptionFeature, type OpenClawTTS, PAID_TIER, PRICING, type Payment, type PaymentStatus, RATE_LIMITS, SOLANA_CONFIG, TOKEN_ECONOMY, type User, type UserPublic, type UserTier, type WSMessage, type WSMessageType, type WsChatMessage, type WsChatPayload, err, getBYOKProvider, getFeaturePricing, getFeaturesByFramework, ok };
+export { ACCOUNT_AGENT_LIMITS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_TEMPLATES, ALL_FEATURE_KEYS, type AccountFeature, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFeaturePublic, type AgentFile, type AgentFramework, type AgentPublic, type AgentStatus, type AgentTemplateId, type ApiErr, type ApiOk, type ApiResponse, type AuthChallenge, type AuthToken, BUNDLES, type BYOKConfig, type BYOKProvider, type BYOKProviderMeta, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type BundleDef, CREDIT_PACKS, type ChannelSettings, type ChatMessage, type CreditPack, FEATURE_CATALOG, FRAMEWORKS, FREE_TIER_LIMITS, FREE_TIER_MAX_AGENTS, type FeatureKey, type FeaturePricing, type FeatureType, type Framework, type FrameworkMeta, HOSTED_CREDIT_MODELS, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type LlmUsage, type OpenClawAgentDef, type OpenClawAgents, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawCron, type OpenClawGateway, type OpenClawGatewayAuth, type OpenClawHooks, type OpenClawMessages, type OpenClawModelProvider, type OpenClawModelRef, type OpenClawModels, type OpenClawNativeConfig, type OpenClawPlatformFeature, type OpenClawResourceFeature, type OpenClawSession, type OpenClawSkillsConfig, type OpenClawSkillsFeature, type OpenClawSubscriptionFeature, type OpenClawTTS, PAID_TIER, PRICING, type Payment, type PaymentStatus, RATE_LIMITS, SOLANA_CONFIG, TOKEN_ECONOMY, type User, type UserPublic, type UserTier, type WSMessage, type WSMessageType, type WsChatMessage, type WsChatPayload, err, getBYOKProvider, getFeaturePricing, getFeaturesByFramework, ok };

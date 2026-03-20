@@ -104,29 +104,45 @@ export interface OpenClawAgents {
   list?: OpenClawAgentDef[];
 }
 
-export interface OpenClawChannelAccount {
+/** Per-channel behavior settings (stored in config_json.channelSettings) */
+export interface ChannelSettings {
+  dmPolicy?: 'open' | 'allowlist' | 'disabled';
+  groupPolicy?: 'open' | 'mention' | 'disabled';
+  allowFrom?: string[];
+  groupAllowFrom?: string[];
+  streaming?: 'partial' | 'full' | 'off';
+}
+
+/**
+ * OpenClaw channel config — flat structure.
+ * Credentials and settings live directly on the channel object.
+ */
+export interface OpenClawChannel {
+  enabled: boolean;
+  // Common settings
+  dmPolicy?: string;
+  groupPolicy?: string;
+  allowFrom?: string[];
+  groupAllowFrom?: string[];
+  streaming?: string;
+  // Credentials (vary per channel)
   botToken?: string;
   token?: string;
   appToken?: string;
-  enabled?: boolean;
-  dmPolicy?: string;
-  allowFrom?: string[];
-  streaming?: string;
+  account?: string;
   [key: string]: unknown;
 }
 
-export interface OpenClawChannel {
-  enabled: boolean;
-  accounts?: Record<string, OpenClawChannelAccount>;
-  groupPolicy?: string;
-  [key: string]: unknown;
-}
-
+/** All valid OpenClaw channel identifiers */
 export type OpenClawChannelName =
+  // Main platforms
   | 'telegram' | 'discord' | 'whatsapp' | 'slack'
-  | 'signal' | 'imessage' | 'irc' | 'google-chat'
-  | 'teams' | 'mattermost' | 'line' | 'matrix'
-  | 'nostr' | 'twitch' | 'webchat';
+  | 'signal' | 'imessage'
+  // Extra platforms
+  | 'irc' | 'googlechat' | 'msteams' | 'mattermost'
+  | 'line' | 'matrix' | 'nostr' | 'twitch'
+  | 'feishu' | 'nextcloud-talk' | 'synology-chat'
+  | 'tlon' | 'zalo' | 'bluebubbles';
 
 export interface OpenClawBinding {
   agentId: string;
@@ -145,10 +161,13 @@ export interface OpenClawHooks {
   allowedAgentIds?: string[];
 }
 
+/** OpenClaw TTS config — flat provider keys (e.g. `elevenlabs: { apiKey }`) */
 export interface OpenClawTTS {
   provider?: string;
   voice?: string;
-  providers?: Record<string, { apiKey?: string }>;
+  elevenlabs?: { apiKey?: string };
+  openai?: { apiKey?: string };
+  edge?: Record<string, unknown>;
 }
 
 export interface OpenClawMessages {
