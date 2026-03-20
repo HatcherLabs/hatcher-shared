@@ -5,7 +5,7 @@
 import type { AgentFramework, AgentStatus, FeatureKey, FeatureType, CreditPack } from '../types/index.js';
 
 // --- Feature Pricing Catalog ---
-// All prices in USD. Converted to $HATCH at Jupiter live rate at payment time.
+// All prices in USD. Converted to platform tokens at Jupiter live rate at payment time.
 
 export interface FeaturePricing {
   key: FeatureKey;
@@ -24,6 +24,7 @@ export const FEATURE_CATALOG: FeaturePricing[] = [
   { key: 'openclaw.platform.discord', name: 'Discord', description: 'Discord', usdPrice: 4, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
   { key: 'openclaw.platform.whatsapp', name: 'WhatsApp', description: 'WhatsApp', usdPrice: 6, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
   { key: 'openclaw.platform.signal', name: 'Signal', description: 'Signal', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
+  { key: 'openclaw.platform.twitter', name: 'X (Twitter)', description: 'Twitter / X', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
   { key: 'openclaw.platform.slack', name: 'Slack', description: 'Slack', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
   { key: 'openclaw.platform.imessage', name: 'iMessage', description: 'iMessage (macOS only)', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
   { key: 'openclaw.platform.extra', name: 'All Platforms', description: 'All remaining 15+ platforms', usdPrice: 12, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
@@ -31,7 +32,7 @@ export const FEATURE_CATALOG: FeaturePricing[] = [
   // --- OpenClaw Skills ---
   { key: 'openclaw.skills.pack3', name: '3 Skills', description: 'Up to 3 ClawHub skills', usdPrice: 0, type: 'one_time', framework: 'openclaw', category: 'Skills', free: true },
   { key: 'openclaw.skills.pack10', name: '10 Skills', description: 'Up to 10 ClawHub skills', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Skills' },
-  { key: 'openclaw.skills.unlimited', name: 'Unlimited Skills', description: 'All 800+ ClawHub skills', usdPrice: 18, type: 'one_time', framework: 'openclaw', category: 'Skills' },
+  { key: 'openclaw.skills.unlimited', name: 'Unlimited Skills', description: 'All 3,200+ ClawHub skills', usdPrice: 18, type: 'one_time', framework: 'openclaw', category: 'Skills' },
 
   // --- OpenClaw Automation ---
   { key: 'openclaw.feature.cron', name: 'Scheduled Tasks', description: 'Scheduled tasks and timed triggers', usdPrice: 5, type: 'subscription', framework: 'openclaw', category: 'Automation' },
@@ -48,9 +49,8 @@ export const FEATURE_CATALOG: FeaturePricing[] = [
   { key: 'openclaw.resources.dedicated', name: 'Dedicated Container', description: 'Dedicated container', usdPrice: 18, type: 'subscription', framework: 'openclaw', category: 'Resources' },
   { key: 'openclaw.resources.logs_full', name: 'Full Logs', description: 'Full log history (30 days)', usdPrice: 5, type: 'subscription', framework: 'openclaw', category: 'Resources' },
 
-  // --- OpenClaw Chat & Files ---
+  // --- OpenClaw Chat ---
   { key: 'openclaw.feature.unlimited_chat', name: 'Unlimited Chat', description: 'Unlimited daily chat messages (removes 50/day limit)', usdPrice: 5, type: 'subscription', framework: 'openclaw', category: 'Chat' },
-  { key: 'openclaw.feature.file_manager', name: 'File Manager', description: 'Upload and manage files for your agent', usdPrice: 5, type: 'subscription', framework: 'openclaw', category: 'Files' },
 
   // --- Account-Level ---
   { key: 'account.agents.5', name: '5 Agents', description: 'Up to 5 active agents', usdPrice: 18, type: 'subscription', framework: 'account', category: 'Account' },
@@ -156,10 +156,8 @@ export const FREE_TIER_LIMITS = {
 // --- Token Economy ---
 
 export const TOKEN_ECONOMY = {
-  burnRate: 0.5,
-  treasuryRate: 0.5,
-  symbol: '$HATCH',
-  name: 'Hatch',
+  symbol: 'TOKEN',
+  name: 'Token',
 } as const;
 
 // --- BYOK Providers & Models ---
@@ -283,14 +281,14 @@ export const FRAMEWORKS: Record<AgentFramework, FrameworkMeta> = {
   openclaw: {
     key: 'openclaw',
     name: 'OpenClaw',
-    description: 'Self-hosted AI assistant with 800+ community skills, multi-channel messaging gateway, and autonomous task execution.',
+    description: 'Self-hosted AI assistant with 3,200+ community skills, multi-channel messaging gateway, and autonomous task execution.',
     complexity: 'advanced',
     bestFor: 'Autonomous agents, task automation, multi-channel messaging',
     dockerImage: 'hatcher/openclaw:latest',
     port: 18789,
     healthEndpoint: '/healthz',
     chatEndpoint: '/api/chat',
-    features: ['800+ community skills', 'Multi-channel gateway', 'Browser automation', 'Cron jobs & triggers'],
+    features: ['3,200+ community skills', 'Multi-channel gateway', 'Browser automation', 'Cron jobs & triggers'],
     docsUrl: 'https://docs.openclaw.ai',
   },
 };
@@ -334,7 +332,7 @@ export const FREE_TIER_MAX_AGENTS = 1;
 
 export const PRICING = {
   free: { usdPrice: 0, label: 'Free', description: 'Free baseline — 1 agent, Groq LLM, BYOK always free' },
-  paid: { usdPrice: 0, label: 'A la carte', type: 'one_time' as const, description: 'Unlock features individually with $HATCH' },
+  paid: { usdPrice: 0, label: 'A la carte', type: 'one_time' as const, description: 'Unlock features individually with tokens' },
 };
 
 // --- Agent Templates ---

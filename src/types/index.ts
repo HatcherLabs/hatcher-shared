@@ -256,6 +256,7 @@ export type OpenClawPlatformFeature =
   | 'openclaw.platform.discord'
   | 'openclaw.platform.whatsapp'
   | 'openclaw.platform.signal'
+  | 'openclaw.platform.twitter'
   | 'openclaw.platform.slack'
   | 'openclaw.platform.imessage'
   | 'openclaw.platform.extra';
@@ -273,8 +274,7 @@ export type OpenClawSubscriptionFeature =
   | 'openclaw.feature.persistent_memory'
   | 'openclaw.feature.multiagent'
   | 'openclaw.feature.voice'
-  | 'openclaw.feature.unlimited_chat'
-  | 'openclaw.feature.file_manager';
+  | 'openclaw.feature.unlimited_chat';
 
 // OpenClaw resource features (monthly)
 export type OpenClawResourceFeature =

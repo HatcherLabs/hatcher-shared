@@ -219,7 +219,7 @@ interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'ownerId'> 
 }
 type OpenClawPlatformFeature = 'openclaw.platform.telegram' | 'openclaw.platform.discord' | 'openclaw.platform.whatsapp' | 'openclaw.platform.signal' | 'openclaw.platform.slack' | 'openclaw.platform.imessage' | 'openclaw.platform.extra';
 type OpenClawSkillsFeature = 'openclaw.skills.pack3' | 'openclaw.skills.pack10' | 'openclaw.skills.unlimited';
-type OpenClawSubscriptionFeature = 'openclaw.feature.cron' | 'openclaw.feature.webhooks' | 'openclaw.feature.persistent_memory' | 'openclaw.feature.multiagent' | 'openclaw.feature.voice' | 'openclaw.feature.unlimited_chat' | 'openclaw.feature.file_manager';
+type OpenClawSubscriptionFeature = 'openclaw.feature.cron' | 'openclaw.feature.webhooks' | 'openclaw.feature.persistent_memory' | 'openclaw.feature.multiagent' | 'openclaw.feature.voice' | 'openclaw.feature.unlimited_chat';
 type OpenClawResourceFeature = 'openclaw.resources.dedicated' | 'openclaw.resources.logs_full';
 type AccountFeature = 'account.agents.5' | 'account.agents.20' | 'account.agents.unlimited' | 'account.support.priority' | 'account.analytics' | 'account.api.pro' | 'account.api.business';
 type FeatureKey = OpenClawPlatformFeature | OpenClawSkillsFeature | OpenClawSubscriptionFeature | OpenClawResourceFeature | AccountFeature;
