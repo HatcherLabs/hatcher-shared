@@ -2,156 +2,104 @@
 // Shared Constants for Hatcher
 // ============================================================
 
-import type { AgentFramework, AgentStatus, FeatureKey, FeatureType, CreditPack } from '../types/index.js';
+import type { AgentFramework, AgentStatus, UserTierKey, AddonKey } from '../types/index.js';
 
-// --- Feature Pricing Catalog ---
-// All prices in USD. Converted to platform tokens at Jupiter live rate at payment time.
+// --- Subscription Tiers ---
 
-export interface FeaturePricing {
-  key: FeatureKey;
+export interface TierConfig {
+  key: UserTierKey;
+  name: string;
+  usdPrice: number;       // 0 = free
+  includedAgents: number;
+  messagesPerDay: number;  // 0 = unlimited
+  cpuLimit: number;        // CPU cores
+  memoryMb: number;        // RAM in MB
+  storageMb: number;       // Workspace in MB
+  autoSleep: boolean;      // true = sleep after idle
+  autoSleepMinutes: number;
+  fileManager: boolean;
+  fullLogs: boolean;
+  prioritySupport: boolean;
+}
+
+export const TIERS: Record<UserTierKey, TierConfig> = {
+  free: {
+    key: 'free',
+    name: 'Free',
+    usdPrice: 0,
+    includedAgents: 1,
+    messagesPerDay: 20,
+    cpuLimit: 0.25,
+    memoryMb: 256,
+    storageMb: 150,
+    autoSleep: true,
+    autoSleepMinutes: 15,
+    fileManager: false,
+    fullLogs: false,
+    prioritySupport: false,
+  },
+  unlimited: {
+    key: 'unlimited',
+    name: 'Unlimited',
+    usdPrice: 9.99,
+    includedAgents: 1,
+    messagesPerDay: 0, // unlimited
+    cpuLimit: 0.5,
+    memoryMb: 512,
+    storageMb: 300,
+    autoSleep: false,
+    autoSleepMinutes: 0,
+    fileManager: false,
+    fullLogs: false,
+    prioritySupport: false,
+  },
+  pro: {
+    key: 'pro',
+    name: 'Pro',
+    usdPrice: 19.99,
+    includedAgents: 5,
+    messagesPerDay: 0, // unlimited
+    cpuLimit: 1,
+    memoryMb: 1024,
+    storageMb: 600,
+    autoSleep: false,
+    autoSleepMinutes: 0,
+    fileManager: true,
+    fullLogs: true,
+    prioritySupport: true,
+  },
+};
+
+export const TIER_ORDER: UserTierKey[] = ['free', 'unlimited', 'pro'];
+
+// --- Add-ons ---
+
+export interface AddonConfig {
+  key: AddonKey;
   name: string;
   description: string;
   usdPrice: number;
-  type: FeatureType;
-  framework: AgentFramework | 'account';
-  category: string;
-  free?: boolean; // true = included in free tier (e.g. openclaw.skills.pack3)
+  type: 'subscription' | 'one_time';
+  perAgent: boolean;       // true = purchased per agent, false = account-wide
+  extraAgents?: number;    // only for agent add-ons
 }
 
-export const FEATURE_CATALOG: FeaturePricing[] = [
-  // --- OpenClaw Platforms ---
-  { key: 'openclaw.platform.telegram', name: 'Telegram', description: 'Telegram (beyond free basic)', usdPrice: 4, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
-  { key: 'openclaw.platform.discord', name: 'Discord', description: 'Discord', usdPrice: 4, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
-  { key: 'openclaw.platform.whatsapp', name: 'WhatsApp', description: 'WhatsApp', usdPrice: 6, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
-  { key: 'openclaw.platform.signal', name: 'Signal', description: 'Signal', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
-  { key: 'openclaw.platform.twitter', name: 'X (Twitter)', description: 'Twitter / X', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
-  { key: 'openclaw.platform.slack', name: 'Slack', description: 'Slack', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
-  { key: 'openclaw.platform.imessage', name: 'iMessage', description: 'iMessage (macOS only)', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
-  { key: 'openclaw.platform.extra', name: 'All Platforms', description: 'All remaining 15+ platforms', usdPrice: 12, type: 'one_time', framework: 'openclaw', category: 'Platforms' },
-
-  // --- OpenClaw Skills ---
-  { key: 'openclaw.skills.pack3', name: '3 Skills', description: 'Up to 3 ClawHub skills', usdPrice: 0, type: 'one_time', framework: 'openclaw', category: 'Skills', free: true },
-  { key: 'openclaw.skills.pack10', name: '10 Skills', description: 'Up to 10 ClawHub skills', usdPrice: 5, type: 'one_time', framework: 'openclaw', category: 'Skills' },
-  { key: 'openclaw.skills.unlimited', name: 'Unlimited Skills', description: 'All 3,200+ ClawHub skills', usdPrice: 18, type: 'one_time', framework: 'openclaw', category: 'Skills' },
-
-  // --- OpenClaw Automation ---
-  { key: 'openclaw.feature.cron', name: 'Scheduled Tasks', description: 'Scheduled tasks and timed triggers', usdPrice: 5, type: 'subscription', framework: 'openclaw', category: 'Automation' },
-  { key: 'openclaw.feature.webhooks', name: 'Webhooks', description: 'Custom webhooks + external event triggers', usdPrice: 6, type: 'subscription', framework: 'openclaw', category: 'Automation' },
-
-  // --- OpenClaw Memory & Context ---
-  { key: 'openclaw.feature.persistent_memory', name: 'Persistent Memory', description: 'Persistent cross-session memory', usdPrice: 6, type: 'subscription', framework: 'openclaw', category: 'Memory' },
-  { key: 'openclaw.feature.multiagent', name: 'Multi-Agent', description: 'Multi-agent routing + workspaces', usdPrice: 10, type: 'subscription', framework: 'openclaw', category: 'Memory' },
-
-  // --- OpenClaw Media & Voice ---
-  { key: 'openclaw.feature.voice', name: 'Voice', description: 'Whisper STT + ElevenLabs TTS', usdPrice: 10, type: 'subscription', framework: 'openclaw', category: 'Media' },
-
-  // --- OpenClaw Resources ---
-  { key: 'openclaw.resources.dedicated', name: 'Dedicated Container', description: 'Dedicated container', usdPrice: 18, type: 'subscription', framework: 'openclaw', category: 'Resources' },
-  { key: 'openclaw.resources.logs_full', name: 'Full Logs', description: 'Full log history (30 days)', usdPrice: 5, type: 'subscription', framework: 'openclaw', category: 'Resources' },
-
-  // --- OpenClaw Chat ---
-  { key: 'openclaw.feature.unlimited_chat', name: 'Unlimited Chat', description: 'Unlimited daily chat messages (removes 50/day limit)', usdPrice: 5, type: 'subscription', framework: 'openclaw', category: 'Chat' },
-
-  // --- Account-Level ---
-  { key: 'account.agents.5', name: '5 Agents', description: 'Up to 5 active agents', usdPrice: 18, type: 'subscription', framework: 'account', category: 'Account' },
-  { key: 'account.agents.20', name: '20 Agents', description: 'Up to 20 active agents', usdPrice: 55, type: 'subscription', framework: 'account', category: 'Account' },
-  { key: 'account.agents.unlimited', name: 'Unlimited Agents', description: 'Unlimited agents (shared containers)', usdPrice: 180, type: 'subscription', framework: 'account', category: 'Account' },
-  { key: 'account.support.priority', name: 'Priority Support', description: 'Priority support', usdPrice: 8, type: 'subscription', framework: 'account', category: 'Account' },
-  { key: 'account.analytics', name: 'Analytics', description: 'Cross-agent analytics dashboard', usdPrice: 8, type: 'subscription', framework: 'account', category: 'Account' },
-
-  // --- API Tiers ---
-  { key: 'account.api.pro', name: 'API Pro', description: 'Programmatic API: 10,000 requests/day', usdPrice: 15, type: 'subscription', framework: 'account', category: 'API' },
-  { key: 'account.api.business', name: 'API Business', description: 'Programmatic API: 100,000 requests/day', usdPrice: 45, type: 'subscription', framework: 'account', category: 'API' },
+export const ADDONS: AddonConfig[] = [
+  { key: 'addon.agents.3',  name: '+3 Agents',  description: '3 additional agents', usdPrice: 4.99,  type: 'subscription', perAgent: false, extraAgents: 3 },
+  { key: 'addon.agents.5',  name: '+5 Agents',  description: '5 additional agents', usdPrice: 7.99,  type: 'subscription', perAgent: false, extraAgents: 5 },
+  { key: 'addon.agents.10', name: '+10 Agents', description: '10 additional agents', usdPrice: 14.99, type: 'subscription', perAgent: false, extraAgents: 10 },
+  { key: 'addon.file_manager', name: 'File Manager', description: 'Browse, edit & download agent files', usdPrice: 9.99, type: 'one_time', perAgent: true },
 ];
 
-// Helper to get features by framework
-export function getFeaturesByFramework(framework: AgentFramework | 'account'): FeaturePricing[] {
-  return FEATURE_CATALOG.filter(f => f.framework === framework);
+// Helper: get tier config
+export function getTier(key: UserTierKey): TierConfig {
+  return TIERS[key];
 }
 
-// Helper to get feature pricing by key
-export function getFeaturePricing(key: FeatureKey): FeaturePricing | undefined {
-  return FEATURE_CATALOG.find(f => f.key === key);
+// Helper: get addon config
+export function getAddon(key: AddonKey): AddonConfig | undefined {
+  return ADDONS.find(a => a.key === key);
 }
-
-// All valid feature keys
-export const ALL_FEATURE_KEYS: FeatureKey[] = FEATURE_CATALOG.map(f => f.key);
-
-// --- Bundles ---
-
-export interface BundleDef {
-  key: string;
-  name: string;
-  description: string;
-  usdPrice: number;
-  type: FeatureType;
-  features: FeatureKey[];
-  framework: AgentFramework;
-}
-
-export const BUNDLES: BundleDef[] = [
-  {
-    key: 'bundle.starter',
-    name: 'Starter',
-    description: '2 platforms + 10 skills',
-    usdPrice: 18,
-    type: 'one_time',
-    features: ['openclaw.platform.telegram', 'openclaw.platform.discord', 'openclaw.skills.pack10'],
-    framework: 'openclaw',
-  },
-  {
-    key: 'bundle.social',
-    name: 'Social Agent',
-    description: 'Telegram + Discord + WhatsApp + Slack',
-    usdPrice: 19,
-    type: 'one_time',
-    features: ['openclaw.platform.telegram', 'openclaw.platform.discord', 'openclaw.platform.whatsapp', 'openclaw.platform.slack'],
-    framework: 'openclaw',
-  },
-  {
-    key: 'bundle.power',
-    name: 'Power',
-    description: 'Dedicated container + persistent memory + full logs + webhooks',
-    usdPrice: 30,
-    type: 'subscription',
-    features: ['openclaw.resources.dedicated', 'openclaw.feature.persistent_memory', 'openclaw.resources.logs_full', 'openclaw.feature.webhooks'],
-    framework: 'openclaw',
-  },
-];
-
-// --- Hosted Credit Packs ---
-
-export const CREDIT_PACKS: CreditPack[] = [
-  { key: 'credits.starter', label: 'Starter', hatchUsd: 5, creditsUsd: 2 },
-  { key: 'credits.standard', label: 'Standard', hatchUsd: 15, creditsUsd: 7 },
-  { key: 'credits.pro', label: 'Pro', hatchUsd: 40, creditsUsd: 22 },
-];
-
-// Hosted credits available models (cost-effective only)
-export const HOSTED_CREDIT_MODELS = [
-  { model: 'claude-haiku-4-5-20251001', provider: 'anthropic', label: 'Claude Haiku 4.5', inputPer1k: 0.0008, outputPer1k: 0.004 },
-  { model: 'gpt-4o-mini', provider: 'openai', label: 'GPT-4o mini', inputPer1k: 0.00015, outputPer1k: 0.0006 },
-  { model: 'gemini-2.0-flash', provider: 'google', label: 'Gemini 2.0 Flash', inputPer1k: 0.0001, outputPer1k: 0.0004 },
-] as const;
-
-// --- Free Tier Limits ---
-
-export const FREE_TIER_LIMITS = {
-  maxActiveAgents: 1,
-  logRetentionHours: 24,
-  chatMessagesPerDay: 50,
-  researchTasksPerDay: 20,
-  contentDraftsPerDay: 15,
-  tokenScansPerDay: 10,
-  walletWatcherMax: 3,
-  // OpenClaw free tier
-  openclaw: {
-    maxSkills: 3,
-    skills: ['chat', 'search', 'calculator'] as string[],
-    workflows: false as const,
-    triggers: false as const,
-  },
-} as const;
 
 // --- Token Economy ---
 

@@ -13,18 +13,21 @@ type ApiErr = ApiResponse<never> & {
 };
 declare function ok<T>(data: T): ApiOk<T>;
 declare function err(error: string): ApiErr;
-type UserTier = 'free' | 'paid';
 interface User {
     id: string;
-    walletAddress: string;
+    email: string;
+    username: string;
+    walletAddress: string | null;
     apiKey: string;
     referralCode: string | null;
     hatchCredits: number;
+    isAdmin: boolean;
     createdAt: Date;
 }
 interface UserPublic {
     id: string;
-    walletAddress: string;
+    username: string;
+    walletAddress: string | null;
     referralCode: string | null;
     createdAt: Date;
 }
@@ -217,13 +220,10 @@ interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'ownerId'> 
     ownerAddress: string;
     features: AgentFeaturePublic[];
 }
-type OpenClawPlatformFeature = 'openclaw.platform.telegram' | 'openclaw.platform.discord' | 'openclaw.platform.whatsapp' | 'openclaw.platform.signal' | 'openclaw.platform.slack' | 'openclaw.platform.imessage' | 'openclaw.platform.extra';
-type OpenClawSkillsFeature = 'openclaw.skills.pack3' | 'openclaw.skills.pack10' | 'openclaw.skills.unlimited';
-type OpenClawSubscriptionFeature = 'openclaw.feature.cron' | 'openclaw.feature.webhooks' | 'openclaw.feature.persistent_memory' | 'openclaw.feature.multiagent' | 'openclaw.feature.voice' | 'openclaw.feature.unlimited_chat';
-type OpenClawResourceFeature = 'openclaw.resources.dedicated' | 'openclaw.resources.logs_full';
-type AccountFeature = 'account.agents.5' | 'account.agents.20' | 'account.agents.unlimited' | 'account.support.priority' | 'account.analytics' | 'account.api.pro' | 'account.api.business';
-type FeatureKey = OpenClawPlatformFeature | OpenClawSkillsFeature | OpenClawSubscriptionFeature | OpenClawResourceFeature | AccountFeature;
-type FeatureType = 'one_time' | 'subscription';
+type UserTierKey = 'free' | 'unlimited' | 'pro';
+type AddonKey = 'addon.agents.3' | 'addon.agents.5' | 'addon.agents.10' | 'addon.file_manager';
+type FeatureKey = UserTierKey | AddonKey;
+type FeatureType = 'subscription';
 interface AgentFeature {
     id: string;
     agentId: string | null;
@@ -293,12 +293,6 @@ interface LlmUsage {
     usdCost: number;
     createdAt: Date;
 }
-interface CreditPack {
-    key: string;
-    label: string;
-    hatchUsd: number;
-    creditsUsd: number;
-}
 type WSMessageType = 'chat_message' | 'chat_response' | 'chat_error' | 'agent_status' | 'rate_limit';
 interface WSMessage {
     type: WSMessageType;
@@ -347,70 +341,38 @@ interface WsChatPayload {
     history?: WsChatMessage[];
 }
 
-interface FeaturePricing {
-    key: FeatureKey;
+interface TierConfig {
+    key: UserTierKey;
+    name: string;
+    usdPrice: number;
+    includedAgents: number;
+    messagesPerDay: number;
+    cpuLimit: number;
+    memoryMb: number;
+    storageMb: number;
+    autoSleep: boolean;
+    autoSleepMinutes: number;
+    fileManager: boolean;
+    fullLogs: boolean;
+    prioritySupport: boolean;
+}
+declare const TIERS: Record<UserTierKey, TierConfig>;
+declare const TIER_ORDER: UserTierKey[];
+interface AddonConfig {
+    key: AddonKey;
     name: string;
     description: string;
     usdPrice: number;
-    type: FeatureType;
-    framework: AgentFramework | 'account';
-    category: string;
-    free?: boolean;
+    type: 'subscription' | 'one_time';
+    perAgent: boolean;
+    extraAgents?: number;
 }
-declare const FEATURE_CATALOG: FeaturePricing[];
-declare function getFeaturesByFramework(framework: AgentFramework | 'account'): FeaturePricing[];
-declare function getFeaturePricing(key: FeatureKey): FeaturePricing | undefined;
-declare const ALL_FEATURE_KEYS: FeatureKey[];
-interface BundleDef {
-    key: string;
-    name: string;
-    description: string;
-    usdPrice: number;
-    type: FeatureType;
-    features: FeatureKey[];
-    framework: AgentFramework;
-}
-declare const BUNDLES: BundleDef[];
-declare const CREDIT_PACKS: CreditPack[];
-declare const HOSTED_CREDIT_MODELS: readonly [{
-    readonly model: "claude-haiku-4-5-20251001";
-    readonly provider: "anthropic";
-    readonly label: "Claude Haiku 4.5";
-    readonly inputPer1k: 0.0008;
-    readonly outputPer1k: 0.004;
-}, {
-    readonly model: "gpt-4o-mini";
-    readonly provider: "openai";
-    readonly label: "GPT-4o mini";
-    readonly inputPer1k: 0.00015;
-    readonly outputPer1k: 0.0006;
-}, {
-    readonly model: "gemini-2.0-flash";
-    readonly provider: "google";
-    readonly label: "Gemini 2.0 Flash";
-    readonly inputPer1k: 0.0001;
-    readonly outputPer1k: 0.0004;
-}];
-declare const FREE_TIER_LIMITS: {
-    readonly maxActiveAgents: 1;
-    readonly logRetentionHours: 24;
-    readonly chatMessagesPerDay: 50;
-    readonly researchTasksPerDay: 20;
-    readonly contentDraftsPerDay: 15;
-    readonly tokenScansPerDay: 10;
-    readonly walletWatcherMax: 3;
-    readonly openclaw: {
-        readonly maxSkills: 3;
-        readonly skills: string[];
-        readonly workflows: false;
-        readonly triggers: false;
-    };
-};
+declare const ADDONS: AddonConfig[];
+declare function getTier(key: UserTierKey): TierConfig;
+declare function getAddon(key: AddonKey): AddonConfig | undefined;
 declare const TOKEN_ECONOMY: {
-    readonly burnRate: 0.5;
-    readonly treasuryRate: 0.5;
-    readonly symbol: "$HATCH";
-    readonly name: "Hatch";
+    readonly symbol: "TOKEN";
+    readonly name: "Token";
 };
 interface BYOKProviderMeta {
     key: BYOKProvider;
@@ -606,4 +568,4 @@ declare const PAID_TIER: {
     };
 };
 
-export { ACCOUNT_AGENT_LIMITS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_TEMPLATES, ALL_FEATURE_KEYS, type AccountFeature, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFeaturePublic, type AgentFile, type AgentFramework, type AgentPublic, type AgentStatus, type AgentTemplateId, type ApiErr, type ApiOk, type ApiResponse, type AuthChallenge, type AuthToken, BUNDLES, type BYOKConfig, type BYOKProvider, type BYOKProviderMeta, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type BundleDef, CREDIT_PACKS, type ChannelSettings, type ChatMessage, type CreditPack, FEATURE_CATALOG, FRAMEWORKS, FREE_TIER_LIMITS, FREE_TIER_MAX_AGENTS, type FeatureKey, type FeaturePricing, type FeatureType, type Framework, type FrameworkMeta, HOSTED_CREDIT_MODELS, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type LlmUsage, type OpenClawAgentDef, type OpenClawAgents, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawCron, type OpenClawGateway, type OpenClawGatewayAuth, type OpenClawHooks, type OpenClawMessages, type OpenClawModelProvider, type OpenClawModelRef, type OpenClawModels, type OpenClawNativeConfig, type OpenClawPlatformFeature, type OpenClawResourceFeature, type OpenClawSession, type OpenClawSkillsConfig, type OpenClawSkillsFeature, type OpenClawSubscriptionFeature, type OpenClawTTS, PAID_TIER, PRICING, type Payment, type PaymentStatus, RATE_LIMITS, SOLANA_CONFIG, TOKEN_ECONOMY, type User, type UserPublic, type UserTier, type WSMessage, type WSMessageType, type WsChatMessage, type WsChatPayload, err, getBYOKProvider, getFeaturePricing, getFeaturesByFramework, ok };
+export { ACCOUNT_AGENT_LIMITS, ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_TEMPLATES, type AddonConfig, type AddonKey, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFeaturePublic, type AgentFile, type AgentFramework, type AgentPublic, type AgentStatus, type AgentTemplateId, type ApiErr, type ApiOk, type ApiResponse, type AuthChallenge, type AuthToken, type BYOKConfig, type BYOKProvider, type BYOKProviderMeta, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, FRAMEWORKS, FREE_TIER_MAX_AGENTS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type LlmUsage, type OpenClawAgentDef, type OpenClawAgents, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawCron, type OpenClawGateway, type OpenClawGatewayAuth, type OpenClawHooks, type OpenClawMessages, type OpenClawModelProvider, type OpenClawModelRef, type OpenClawModels, type OpenClawNativeConfig, type OpenClawSession, type OpenClawSkillsConfig, type OpenClawTTS, PAID_TIER, PRICING, type Payment, type PaymentStatus, RATE_LIMITS, SOLANA_CONFIG, TIERS, TIER_ORDER, TOKEN_ECONOMY, type TierConfig, type User, type UserPublic, type UserTierKey, type WSMessage, type WSMessageType, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };

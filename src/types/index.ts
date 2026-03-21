@@ -23,20 +23,23 @@ export function err(error: string): ApiErr {
 
 // --- User ---
 
-export type UserTier = 'free' | 'paid';
 
 export interface User {
   id: string;
-  walletAddress: string;
+  email: string;
+  username: string;
+  walletAddress: string | null;
   apiKey: string;
   referralCode: string | null;
   hatchCredits: number;
+  isAdmin: boolean;
   createdAt: Date;
 }
 
 export interface UserPublic {
   id: string;
-  walletAddress: string;
+  username: string;
+  walletAddress: string | null;
   referralCode: string | null;
   createdAt: Date;
 }
@@ -248,62 +251,23 @@ export interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'own
   features: AgentFeaturePublic[];
 }
 
-// --- Feature Keys (Project Bible pricing model) ---
+// --- Subscription Tiers ---
 
-// OpenClaw platform features (one-time)
-export type OpenClawPlatformFeature =
-  | 'openclaw.platform.telegram'
-  | 'openclaw.platform.discord'
-  | 'openclaw.platform.whatsapp'
-  | 'openclaw.platform.signal'
-  | 'openclaw.platform.twitter'
-  | 'openclaw.platform.slack'
-  | 'openclaw.platform.imessage'
-  | 'openclaw.platform.extra';
+export type UserTierKey = 'free' | 'unlimited' | 'pro';
 
-// OpenClaw skills features (one-time)
-export type OpenClawSkillsFeature =
-  | 'openclaw.skills.pack3'
-  | 'openclaw.skills.pack10'
-  | 'openclaw.skills.unlimited';
+export type AddonKey =
+  | 'addon.agents.3'
+  | 'addon.agents.5'
+  | 'addon.agents.10'
+  | 'addon.file_manager';
 
-// OpenClaw subscription features (monthly)
-export type OpenClawSubscriptionFeature =
-  | 'openclaw.feature.cron'
-  | 'openclaw.feature.webhooks'
-  | 'openclaw.feature.persistent_memory'
-  | 'openclaw.feature.multiagent'
-  | 'openclaw.feature.voice'
-  | 'openclaw.feature.unlimited_chat';
-
-// OpenClaw resource features (monthly)
-export type OpenClawResourceFeature =
-  | 'openclaw.resources.dedicated'
-  | 'openclaw.resources.logs_full';
-
-// Account-level features (monthly subscriptions)
-export type AccountFeature =
-  | 'account.agents.5'
-  | 'account.agents.20'
-  | 'account.agents.unlimited'
-  | 'account.support.priority'
-  | 'account.analytics'
-  | 'account.api.pro'
-  | 'account.api.business';
-
-// Union of all feature keys
-export type FeatureKey =
-  | OpenClawPlatformFeature
-  | OpenClawSkillsFeature
-  | OpenClawSubscriptionFeature
-  | OpenClawResourceFeature
-  | AccountFeature;
-
-export type FeatureType = 'one_time' | 'subscription';
+// FeatureKey is now tier + addon keys (kept for DB backward compat)
+export type FeatureKey = UserTierKey | AddonKey;
+export type FeatureType = 'subscription';
 
 export interface AgentFeature {
   id: string;
-  agentId: string | null; // null for account-level features
+  agentId: string | null;
   userId: string;
   featureKey: FeatureKey;
   type: FeatureType;
@@ -396,15 +360,6 @@ export interface LlmUsage {
   outputTokens: number;
   usdCost: number;
   createdAt: Date;
-}
-
-// --- Hosted Credits ---
-
-export interface CreditPack {
-  key: string;
-  label: string;
-  hatchUsd: number; // price in USD worth of $HATCH
-  creditsUsd: number; // credits received in USD
 }
 
 // --- WebSocket / Chat ---
