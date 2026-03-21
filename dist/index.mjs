@@ -23,8 +23,8 @@ var TIERS = {
     usdPrice: 0,
     includedAgents: 1,
     messagesPerDay: 20,
-    cpuLimit: 0.25,
-    memoryMb: 512,
+    cpuLimit: 0.5,
+    memoryMb: 1024,
     storageMb: 150,
     autoSleep: true,
     autoSleepMinutes: 15,
@@ -39,11 +39,12 @@ var TIERS = {
     includedAgents: 1,
     messagesPerDay: 0,
     // unlimited
-    cpuLimit: 0.5,
-    memoryMb: 1024,
+    cpuLimit: 1,
+    memoryMb: 1536,
     storageMb: 300,
-    autoSleep: false,
-    autoSleepMinutes: 0,
+    autoSleep: true,
+    autoSleepMinutes: 360,
+    // 6 hours
     fileManager: false,
     fullLogs: false,
     prioritySupport: false
@@ -55,7 +56,7 @@ var TIERS = {
     includedAgents: 5,
     messagesPerDay: 0,
     // unlimited
-    cpuLimit: 1,
+    cpuLimit: 2,
     memoryMb: 2048,
     storageMb: 600,
     autoSleep: false,
