@@ -30,7 +30,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     includedAgents: 1,
     messagesPerDay: 20,
     cpuLimit: 0.25,
-    memoryMb: 256,
+    memoryMb: 512,
     storageMb: 150,
     autoSleep: true,
     autoSleepMinutes: 15,
@@ -45,7 +45,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     includedAgents: 1,
     messagesPerDay: 0, // unlimited
     cpuLimit: 0.5,
-    memoryMb: 512,
+    memoryMb: 1024,
     storageMb: 300,
     autoSleep: false,
     autoSleepMinutes: 0,
@@ -60,7 +60,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     includedAgents: 5,
     messagesPerDay: 0, // unlimited
     cpuLimit: 1,
-    memoryMb: 1024,
+    memoryMb: 2048,
     storageMb: 600,
     autoSleep: false,
     autoSleepMinutes: 0,

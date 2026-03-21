@@ -24,7 +24,7 @@ var TIERS = {
     includedAgents: 1,
     messagesPerDay: 20,
     cpuLimit: 0.25,
-    memoryMb: 256,
+    memoryMb: 512,
     storageMb: 150,
     autoSleep: true,
     autoSleepMinutes: 15,
@@ -40,7 +40,7 @@ var TIERS = {
     messagesPerDay: 0,
     // unlimited
     cpuLimit: 0.5,
-    memoryMb: 512,
+    memoryMb: 1024,
     storageMb: 300,
     autoSleep: false,
     autoSleepMinutes: 0,
@@ -56,7 +56,7 @@ var TIERS = {
     messagesPerDay: 0,
     // unlimited
     cpuLimit: 1,
-    memoryMb: 1024,
+    memoryMb: 2048,
     storageMb: 600,
     autoSleep: false,
     autoSleepMinutes: 0,
