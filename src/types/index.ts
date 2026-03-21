@@ -140,7 +140,7 @@ export interface OpenClawChannel {
 export type OpenClawChannelName =
   // Main platforms
   | 'telegram' | 'discord' | 'whatsapp' | 'slack'
-  | 'signal' | 'imessage'
+  | 'signal'
   // Extra platforms
   | 'irc' | 'googlechat' | 'msteams' | 'mattermost'
   | 'line' | 'matrix' | 'nostr' | 'twitch'

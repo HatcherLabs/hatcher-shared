@@ -119,7 +119,7 @@ interface OpenClawChannel {
     [key: string]: unknown;
 }
 /** All valid OpenClaw channel identifiers */
-type OpenClawChannelName = 'telegram' | 'discord' | 'whatsapp' | 'slack' | 'signal' | 'imessage' | 'irc' | 'googlechat' | 'msteams' | 'mattermost' | 'line' | 'matrix' | 'nostr' | 'twitch' | 'feishu' | 'nextcloud-talk' | 'synology-chat' | 'tlon' | 'zalo' | 'bluebubbles';
+type OpenClawChannelName = 'telegram' | 'discord' | 'whatsapp' | 'slack' | 'signal' | 'irc' | 'googlechat' | 'msteams' | 'mattermost' | 'line' | 'matrix' | 'nostr' | 'twitch' | 'feishu' | 'nextcloud-talk' | 'synology-chat' | 'tlon' | 'zalo' | 'bluebubbles';
 interface OpenClawBinding {
     agentId: string;
     match: {
