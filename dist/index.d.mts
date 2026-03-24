@@ -220,7 +220,7 @@ interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'ownerId'> 
     ownerAddress: string;
     features: AgentFeaturePublic[];
 }
-type UserTierKey = 'free' | 'unlimited' | 'pro';
+type UserTierKey = 'free' | 'basic' | 'pro';
 type AddonKey = 'addon.agents.3' | 'addon.agents.5' | 'addon.agents.10' | 'addon.file_manager';
 type FeatureKey = UserTierKey | AddonKey;
 type FeatureType = 'subscription';

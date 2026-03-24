@@ -253,7 +253,7 @@ export interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'own
 
 // --- Subscription Tiers ---
 
-export type UserTierKey = 'free' | 'unlimited' | 'pro';
+export type UserTierKey = 'free' | 'basic' | 'pro';
 
 export type AddonKey =
   | 'addon.agents.3'

@@ -38,12 +38,12 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     fullLogs: false,
     prioritySupport: false,
   },
-  unlimited: {
-    key: 'unlimited',
-    name: 'Unlimited',
+  basic: {
+    key: 'basic',
+    name: 'Basic',
     usdPrice: 9.99,
     includedAgents: 1,
-    messagesPerDay: 0, // unlimited
+    messagesPerDay: 100, // 100/day with our key, BYOK = unlimited
     cpuLimit: 1,
     memoryMb: 1536,
     storageMb: 300,
@@ -58,7 +58,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     name: 'Pro',
     usdPrice: 19.99,
     includedAgents: 5,
-    messagesPerDay: 0, // unlimited
+    messagesPerDay: 300, // 300/day with our key, BYOK = unlimited
     cpuLimit: 2,
     memoryMb: 2048,
     storageMb: 600,
@@ -70,7 +70,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
   },
 };
 
-export const TIER_ORDER: UserTierKey[] = ['free', 'unlimited', 'pro'];
+export const TIER_ORDER: UserTierKey[] = ['free', 'basic', 'pro'];
 
 // --- Add-ons ---
 

@@ -78,13 +78,13 @@ var TIERS = {
     fullLogs: false,
     prioritySupport: false
   },
-  unlimited: {
-    key: "unlimited",
-    name: "Unlimited",
+  basic: {
+    key: "basic",
+    name: "Basic",
     usdPrice: 9.99,
     includedAgents: 1,
-    messagesPerDay: 0,
-    // unlimited
+    messagesPerDay: 100,
+    // 100/day with our key, BYOK = unlimited
     cpuLimit: 1,
     memoryMb: 1536,
     storageMb: 300,
@@ -100,8 +100,8 @@ var TIERS = {
     name: "Pro",
     usdPrice: 19.99,
     includedAgents: 5,
-    messagesPerDay: 0,
-    // unlimited
+    messagesPerDay: 300,
+    // 300/day with our key, BYOK = unlimited
     cpuLimit: 2,
     memoryMb: 2048,
     storageMb: 600,
@@ -112,7 +112,7 @@ var TIERS = {
     prioritySupport: true
   }
 };
-var TIER_ORDER = ["free", "unlimited", "pro"];
+var TIER_ORDER = ["free", "basic", "pro"];
 var ADDONS = [
   { key: "addon.agents.3", name: "+3 Agents", description: "3 additional agents", usdPrice: 4.99, type: "subscription", perAgent: false, extraAgents: 3 },
   { key: "addon.agents.5", name: "+5 Agents", description: "5 additional agents", usdPrice: 7.99, type: "subscription", perAgent: false, extraAgents: 5 },
