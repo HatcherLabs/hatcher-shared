@@ -120,7 +120,8 @@ var ADDONS = [
   { key: "addon.file_manager", name: "File Manager", description: "Browse, edit & download agent files", usdPrice: 9.99, type: "one_time", perAgent: true }
 ];
 function getTier(key) {
-  return TIERS[key];
+  const normalized = key === "unlimited" ? "basic" : key;
+  return TIERS[normalized] ?? TIERS.free;
 }
 function getAddon(key) {
   return ADDONS.find((a) => a.key === key);

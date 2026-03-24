@@ -368,7 +368,7 @@ interface AddonConfig {
     extraAgents?: number;
 }
 declare const ADDONS: AddonConfig[];
-declare function getTier(key: UserTierKey): TierConfig;
+declare function getTier(key: UserTierKey | string): TierConfig;
 declare function getAddon(key: AddonKey): AddonConfig | undefined;
 declare const TOKEN_ECONOMY: {
     readonly symbol: "TOKEN";

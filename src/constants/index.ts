@@ -91,9 +91,11 @@ export const ADDONS: AddonConfig[] = [
   { key: 'addon.file_manager', name: 'File Manager', description: 'Browse, edit & download agent files', usdPrice: 9.99, type: 'one_time', perAgent: true },
 ];
 
-// Helper: get tier config
-export function getTier(key: UserTierKey): TierConfig {
-  return TIERS[key];
+// Helper: get tier config (falls back to free for unknown/legacy tiers)
+export function getTier(key: UserTierKey | string): TierConfig {
+  // Handle legacy 'unlimited' tier → map to 'basic'
+  const normalized = key === 'unlimited' ? 'basic' : key;
+  return TIERS[normalized as UserTierKey] ?? TIERS.free;
 }
 
 // Helper: get addon config
