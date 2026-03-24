@@ -32,7 +32,7 @@ interface UserPublic {
     createdAt: Date;
 }
 type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting';
-type AgentFramework = 'openclaw';
+type AgentFramework = 'openclaw' | 'hermes';
 type Framework = AgentFramework;
 interface OpenClawGatewayAuth {
     mode?: string;

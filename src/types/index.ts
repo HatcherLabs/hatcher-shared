@@ -47,7 +47,7 @@ export interface UserPublic {
 // --- Agent ---
 
 export type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting';
-export type AgentFramework = 'openclaw';
+export type AgentFramework = 'openclaw' | 'hermes';
 export type Framework = AgentFramework;
 
 // ── OpenClaw Native Config Types (matches real openclaw.json) ──

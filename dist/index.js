@@ -228,6 +228,19 @@ var FRAMEWORKS = {
     chatEndpoint: "/api/chat",
     features: ["3,200+ community skills", "Multi-channel gateway", "Browser automation", "Cron jobs & triggers"],
     docsUrl: "https://docs.openclaw.ai"
+  },
+  hermes: {
+    key: "hermes",
+    name: "Hermes Agent",
+    description: "Autonomous AI agent by Nous Research with persistent memory, 40+ tools, skills system, and multi-platform messaging gateway.",
+    complexity: "intermediate",
+    bestFor: "Learning agents, persistent memory, research, multi-provider LLM support",
+    dockerImage: "hatcher/hermes:latest",
+    port: 8642,
+    healthEndpoint: "/health",
+    chatEndpoint: "/v1/chat/completions",
+    features: ["Persistent memory & learning", "40+ built-in tools", "Skills system", "Multi-provider LLM support"],
+    docsUrl: "https://hermes-agent.nousresearch.com"
   }
 };
 var RATE_LIMITS = {
