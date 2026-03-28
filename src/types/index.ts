@@ -48,7 +48,7 @@ export interface UserPublic {
 
 // --- Agent ---
 
-export type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting';
+export type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting' | 'stopping';
 export type AgentFramework = 'openclaw' | 'hermes' | 'elizaos' | 'milady';
 export type Framework = AgentFramework;
 
