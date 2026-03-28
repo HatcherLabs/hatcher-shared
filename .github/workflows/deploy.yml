@@ -1,0 +1,43 @@
+name: Deploy - Shared
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-shared
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Deploy to production
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script_stop: true
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+            cd /home/deploy/hatcher/packages/shared
+
+            echo "==> Pulling latest code..."
+            git pull origin main
+
+            echo "==> Building shared..."
+            npm run build
+
+            echo "==> Syncing to frontend node_modules..."
+            cp -r dist /home/deploy/hatcher/apps/frontend/node_modules/@hatcher/shared/dist
+
+            echo "==> Restarting consumers..."
+            pm2 restart hatcher-api
+            pm2 restart hatcher-web
+
+            echo "==> Deploy complete at $(date '+%Y-%m-%d %H:%M:%S')"
