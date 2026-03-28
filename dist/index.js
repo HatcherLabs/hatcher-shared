@@ -242,6 +242,32 @@ var FRAMEWORKS = {
     chatEndpoint: "/v1/chat/completions",
     features: ["Persistent memory & learning", "40+ built-in tools", "Skills system", "Multi-provider LLM support"],
     docsUrl: "https://hermes-agent.nousresearch.com"
+  },
+  elizaos: {
+    key: "elizaos",
+    name: "ElizaOS",
+    description: "Open-source AI agent framework with character-driven personas, plugin ecosystem, and multi-client support for social and messaging platforms.",
+    complexity: "intermediate",
+    bestFor: "Character-driven agents, social media bots, community engagement",
+    dockerImage: "hatcher/elizaos:latest",
+    port: 3e3,
+    healthEndpoint: "/health",
+    chatEndpoint: "/api/chat",
+    features: ["Character personas", "Plugin ecosystem", "Multi-client support", "Social media integration"],
+    docsUrl: "https://elizaos.github.io/eliza/"
+  },
+  milady: {
+    key: "milady",
+    name: "Milady",
+    description: "Lightweight, personality-first AI agent framework designed for expressive, culturally-aware conversational agents with modular capabilities.",
+    complexity: "beginner",
+    bestFor: "Personality-driven bots, community engagement, lightweight deployment",
+    dockerImage: "hatcher/milady:latest",
+    port: 8080,
+    healthEndpoint: "/health",
+    chatEndpoint: "/api/chat",
+    features: ["Personality-first design", "Modular capabilities", "Lightweight footprint", "Cultural awareness"],
+    docsUrl: "https://docs.milady.gg"
   }
 };
 var RATE_LIMITS = {

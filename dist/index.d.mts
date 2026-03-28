@@ -17,10 +17,12 @@ interface User {
     id: string;
     email: string;
     username: string;
+    passwordHash: string | null;
     walletAddress: string | null;
     apiKey: string;
     referralCode: string | null;
     hatchCredits: number;
+    tier: UserTierKey;
     isAdmin: boolean;
     createdAt: Date;
 }
@@ -32,7 +34,7 @@ interface UserPublic {
     createdAt: Date;
 }
 type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting';
-type AgentFramework = 'openclaw' | 'hermes';
+type AgentFramework = 'openclaw' | 'hermes' | 'elizaos' | 'milady';
 type Framework = AgentFramework;
 interface OpenClawGatewayAuth {
     mode?: string;
@@ -199,20 +201,93 @@ interface OpenClawConfig {
         }>;
     }>;
 }
+interface HermesConfig {
+    name: string;
+    model?: string;
+    provider?: string;
+    systemPrompt?: string;
+    memory?: {
+        enabled?: boolean;
+        backend?: 'sqlite' | 'postgres' | 'redis';
+    };
+    tools?: string[];
+    skills?: string[];
+    channels?: Partial<Record<'telegram' | 'discord' | 'slack' | 'whatsapp', {
+        enabled: boolean;
+        token?: string;
+        [key: string]: unknown;
+    }>>;
+}
+interface ElizaOSConfig {
+    name: string;
+    model?: string;
+    provider?: string;
+    systemPrompt?: string;
+    character?: {
+        name?: string;
+        bio?: string;
+        lore?: string[];
+        topics?: string[];
+        style?: {
+            all?: string[];
+            chat?: string[];
+            post?: string[];
+        };
+        adjectives?: string[];
+    };
+    plugins?: string[];
+    clients?: Array<'telegram' | 'discord' | 'twitter' | 'direct'>;
+    settings?: {
+        secrets?: Record<string, string>;
+        [key: string]: unknown;
+    };
+}
+interface MiladyConfig {
+    name: string;
+    model?: string;
+    provider?: string;
+    systemPrompt?: string;
+    persona?: {
+        name?: string;
+        description?: string;
+        traits?: string[];
+        voice?: string;
+    };
+    modules?: string[];
+    channels?: Partial<Record<'telegram' | 'discord' | 'twitter', {
+        enabled: boolean;
+        token?: string;
+        [key: string]: unknown;
+    }>>;
+}
 type AgentConfig = {
     framework: 'openclaw';
     config: OpenClawConfig;
+} | {
+    framework: 'hermes';
+    config: HermesConfig;
+} | {
+    framework: 'elizaos';
+    config: ElizaOSConfig;
+} | {
+    framework: 'milady';
+    config: MiladyConfig;
 };
 interface Agent {
     id: string;
     ownerId: string;
     name: string;
+    slug: string | null;
     description: string | null;
     avatarUrl: string | null;
     framework: AgentFramework;
+    template: string;
     status: AgentStatus;
+    messageCount: number;
     containerId: string | null;
+    containerToken: string | null;
     config: AgentConfig;
+    teamId: string | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -235,6 +310,7 @@ interface AgentFeature {
     usdPrice: number;
     hatchAmount: number;
     createdAt: Date;
+    updatedAt: Date;
 }
 interface AgentFeaturePublic {
     featureKey: FeatureKey;
@@ -252,6 +328,7 @@ interface Payment {
     txSignature: string;
     status: PaymentStatus;
     createdAt: Date;
+    updatedAt: Date;
 }
 type BYOKProvider = 'openai' | 'anthropic' | 'google' | 'groq' | 'xai' | 'openrouter' | 'ollama';
 /** Maps each BYOK provider to the env var name expected by frameworks */
@@ -286,7 +363,7 @@ interface LLMResponse {
 interface LlmUsage {
     id: string;
     userId: string;
-    agentId: string;
+    agentId: string | null;
     model: string;
     inputTokens: number;
     outputTokens: number;
@@ -322,6 +399,108 @@ interface AgentFile {
     mimeType: string;
     sizeBytes: number;
     content: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+}
+type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+type TicketCategory = 'general' | 'billing' | 'technical' | 'feature_request' | 'bug_report';
+type TicketPriority = 'low' | 'normal' | 'high' | 'urgent';
+interface TicketMessage {
+    role: 'user' | 'support' | 'system';
+    content: string;
+    timestamp: string;
+}
+interface SupportTicket {
+    id: string;
+    userId: string;
+    agentId: string | null;
+    subject: string;
+    category: TicketCategory;
+    priority: TicketPriority;
+    status: TicketStatus;
+    messages: TicketMessage[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+interface FileManagerEntry {
+    path: string;
+    size: number;
+    modified: Date;
+    isDirectory: boolean;
+}
+type AgentAddon = 'agents_3' | 'agents_5' | 'agents_10';
+type TeamMemberRole = 'owner' | 'admin' | 'member' | 'viewer';
+interface Team {
+    id: string;
+    name: string;
+    ownerId: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+interface TeamMember {
+    id: string;
+    teamId: string;
+    userId: string;
+    role: TeamMemberRole;
+    createdAt: Date;
+}
+type SslStatus = 'pending' | 'active' | 'error';
+interface CustomDomain {
+    id: string;
+    agentId: string;
+    domain: string;
+    verified: boolean;
+    sslStatus: SslStatus;
+    cnameTarget: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+interface AgentVersion {
+    id: string;
+    agentId: string;
+    version: number;
+    configSnapshot: string;
+    commitMessage: string | null;
+    createdBy: string | null;
+    createdAt: Date;
+}
+interface ScheduledTask {
+    id: string;
+    agentId: string;
+    name: string;
+    schedule: string;
+    prompt: string;
+    enabled: boolean;
+    lastRunAt: Date | null;
+    nextRunAt: Date | null;
+    runCount: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+interface Referral {
+    id: string;
+    referrerId: string;
+    referredId: string;
+    rewardClaimed: boolean;
+    createdAt: Date;
+}
+type CreditTransactionType = 'referral_reward' | 'subscription' | 'addon' | 'hosted_llm' | 'top_up' | 'stripe_purchase';
+interface CreditTransaction {
+    id: string;
+    userId: string;
+    amount: number;
+    balance: number;
+    type: CreditTransactionType;
+    description: string | null;
+    createdAt: Date;
+}
+interface Workflow {
+    id: string;
+    agentId: string;
+    name: string;
+    enabled: boolean;
+    nodesJson: string;
+    edgesJson: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -568,4 +747,4 @@ declare const PAID_TIER: {
     };
 };
 
-export { ACCOUNT_AGENT_LIMITS, ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_TEMPLATES, type AddonConfig, type AddonKey, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFeaturePublic, type AgentFile, type AgentFramework, type AgentPublic, type AgentStatus, type AgentTemplateId, type ApiErr, type ApiOk, type ApiResponse, type AuthChallenge, type AuthToken, type BYOKConfig, type BYOKProvider, type BYOKProviderMeta, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, FRAMEWORKS, FREE_TIER_MAX_AGENTS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type LlmUsage, type OpenClawAgentDef, type OpenClawAgents, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawCron, type OpenClawGateway, type OpenClawGatewayAuth, type OpenClawHooks, type OpenClawMessages, type OpenClawModelProvider, type OpenClawModelRef, type OpenClawModels, type OpenClawNativeConfig, type OpenClawSession, type OpenClawSkillsConfig, type OpenClawTTS, PAID_TIER, PRICING, type Payment, type PaymentStatus, RATE_LIMITS, SOLANA_CONFIG, TIERS, TIER_ORDER, TOKEN_ECONOMY, type TierConfig, type User, type UserPublic, type UserTierKey, type WSMessage, type WSMessageType, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
+export { ACCOUNT_AGENT_LIMITS, ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_TEMPLATES, type AddonConfig, type AddonKey, type AdminStats, type Agent, type AgentAddon, type AgentConfig, type AgentFeature, type AgentFeaturePublic, type AgentFile, type AgentFramework, type AgentPublic, type AgentStatus, type AgentTemplateId, type AgentVersion, type ApiErr, type ApiOk, type ApiResponse, type AuthChallenge, type AuthToken, type BYOKConfig, type BYOKProvider, type BYOKProviderMeta, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CreditTransaction, type CreditTransactionType, type CustomDomain, type ElizaOSConfig, FRAMEWORKS, FREE_TIER_MAX_AGENTS, type FeatureKey, type FeatureType, type FileManagerEntry, type Framework, type FrameworkMeta, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type LlmUsage, type MiladyConfig, type OpenClawAgentDef, type OpenClawAgents, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawCron, type OpenClawGateway, type OpenClawGatewayAuth, type OpenClawHooks, type OpenClawMessages, type OpenClawModelProvider, type OpenClawModelRef, type OpenClawModels, type OpenClawNativeConfig, type OpenClawSession, type OpenClawSkillsConfig, type OpenClawTTS, PAID_TIER, PRICING, type Payment, type PaymentStatus, RATE_LIMITS, type Referral, SOLANA_CONFIG, type ScheduledTask, type SslStatus, type SupportTicket, TIERS, TIER_ORDER, TOKEN_ECONOMY, type Team, type TeamMember, type TeamMemberRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserPublic, type UserTierKey, type WSMessage, type WSMessageType, type Workflow, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };

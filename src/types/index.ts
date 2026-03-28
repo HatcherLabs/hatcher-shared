@@ -28,10 +28,12 @@ export interface User {
   id: string;
   email: string;
   username: string;
+  passwordHash: string | null;
   walletAddress: string | null;
   apiKey: string;
   referralCode: string | null;
   hatchCredits: number;
+  tier: UserTierKey;
   isAdmin: boolean;
   createdAt: Date;
 }
@@ -47,7 +49,7 @@ export interface UserPublic {
 // --- Agent ---
 
 export type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting';
-export type AgentFramework = 'openclaw' | 'hermes';
+export type AgentFramework = 'openclaw' | 'hermes' | 'elizaos' | 'milady';
 export type Framework = AgentFramework;
 
 // ── OpenClaw Native Config Types (matches real openclaw.json) ──
@@ -226,22 +228,97 @@ export interface OpenClawConfig {
   }>;
 }
 
-// Agent config — OpenClaw only
-export type AgentConfig = {
-  framework: 'openclaw';
-  config: OpenClawConfig;
-};
+// --- Hermes Agent Config (Nous Research) ---
+
+export interface HermesConfig {
+  name: string;
+  model?: string;
+  provider?: string;
+  systemPrompt?: string;
+  memory?: {
+    enabled?: boolean;
+    backend?: 'sqlite' | 'postgres' | 'redis';
+  };
+  tools?: string[];
+  skills?: string[];
+  channels?: Partial<Record<'telegram' | 'discord' | 'slack' | 'whatsapp', {
+    enabled: boolean;
+    token?: string;
+    [key: string]: unknown;
+  }>>;
+}
+
+// --- ElizaOS Config ---
+
+export interface ElizaOSConfig {
+  name: string;
+  model?: string;
+  provider?: string;
+  systemPrompt?: string;
+  character?: {
+    name?: string;
+    bio?: string;
+    lore?: string[];
+    topics?: string[];
+    style?: {
+      all?: string[];
+      chat?: string[];
+      post?: string[];
+    };
+    adjectives?: string[];
+  };
+  plugins?: string[];
+  clients?: Array<'telegram' | 'discord' | 'twitter' | 'direct'>;
+  settings?: {
+    secrets?: Record<string, string>;
+    [key: string]: unknown;
+  };
+}
+
+// --- Milady Config ---
+
+export interface MiladyConfig {
+  name: string;
+  model?: string;
+  provider?: string;
+  systemPrompt?: string;
+  persona?: {
+    name?: string;
+    description?: string;
+    traits?: string[];
+    voice?: string;
+  };
+  modules?: string[];
+  channels?: Partial<Record<'telegram' | 'discord' | 'twitter', {
+    enabled: boolean;
+    token?: string;
+    [key: string]: unknown;
+  }>>;
+}
+
+// --- Agent Config (discriminated union for all frameworks) ---
+
+export type AgentConfig =
+  | { framework: 'openclaw'; config: OpenClawConfig }
+  | { framework: 'hermes'; config: HermesConfig }
+  | { framework: 'elizaos'; config: ElizaOSConfig }
+  | { framework: 'milady'; config: MiladyConfig };
 
 export interface Agent {
   id: string;
   ownerId: string;
   name: string;
+  slug: string | null;
   description: string | null;
   avatarUrl: string | null;
   framework: AgentFramework;
+  template: string;
   status: AgentStatus;
+  messageCount: number;
   containerId: string | null;
+  containerToken: string | null;
   config: AgentConfig;
+  teamId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -276,6 +353,7 @@ export interface AgentFeature {
   usdPrice: number;
   hatchAmount: number;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface AgentFeaturePublic {
@@ -298,6 +376,7 @@ export interface Payment {
   txSignature: string;
   status: PaymentStatus;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 // --- BYOK (Bring Your Own Key) ---
@@ -354,7 +433,7 @@ export interface LLMResponse {
 export interface LlmUsage {
   id: string;
   userId: string;
-  agentId: string;
+  agentId: string | null;
   model: string;
   inputTokens: number;
   outputTokens: number;
@@ -407,6 +486,150 @@ export interface AgentFile {
   mimeType: string;
   sizeBytes: number;
   content: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// --- Support Tickets ---
+
+export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+export type TicketCategory = 'general' | 'billing' | 'technical' | 'feature_request' | 'bug_report';
+export type TicketPriority = 'low' | 'normal' | 'high' | 'urgent';
+
+export interface TicketMessage {
+  role: 'user' | 'support' | 'system';
+  content: string;
+  timestamp: string; // ISO-8601
+}
+
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  agentId: string | null;
+  subject: string;
+  category: TicketCategory;
+  priority: TicketPriority;
+  status: TicketStatus;
+  messages: TicketMessage[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// --- File Manager ---
+
+export interface FileManagerEntry {
+  path: string;
+  size: number;
+  modified: Date;
+  isDirectory: boolean;
+}
+
+// --- Agent Add-on ---
+
+export type AgentAddon = 'agents_3' | 'agents_5' | 'agents_10';
+
+// --- Teams ---
+
+export type TeamMemberRole = 'owner' | 'admin' | 'member' | 'viewer';
+
+export interface Team {
+  id: string;
+  name: string;
+  ownerId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TeamMember {
+  id: string;
+  teamId: string;
+  userId: string;
+  role: TeamMemberRole;
+  createdAt: Date;
+}
+
+// --- Custom Domains ---
+
+export type SslStatus = 'pending' | 'active' | 'error';
+
+export interface CustomDomain {
+  id: string;
+  agentId: string;
+  domain: string;
+  verified: boolean;
+  sslStatus: SslStatus;
+  cnameTarget: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// --- Agent Versioning ---
+
+export interface AgentVersion {
+  id: string;
+  agentId: string;
+  version: number;
+  configSnapshot: string;
+  commitMessage: string | null;
+  createdBy: string | null;
+  createdAt: Date;
+}
+
+// --- Scheduled Tasks ---
+
+export interface ScheduledTask {
+  id: string;
+  agentId: string;
+  name: string;
+  schedule: string;
+  prompt: string;
+  enabled: boolean;
+  lastRunAt: Date | null;
+  nextRunAt: Date | null;
+  runCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// --- Referrals ---
+
+export interface Referral {
+  id: string;
+  referrerId: string;
+  referredId: string;
+  rewardClaimed: boolean;
+  createdAt: Date;
+}
+
+// --- Credit Transactions ---
+
+export type CreditTransactionType =
+  | 'referral_reward'
+  | 'subscription'
+  | 'addon'
+  | 'hosted_llm'
+  | 'top_up'
+  | 'stripe_purchase';
+
+export interface CreditTransaction {
+  id: string;
+  userId: string;
+  amount: number;
+  balance: number;
+  type: CreditTransactionType;
+  description: string | null;
+  createdAt: Date;
+}
+
+// --- Workflows (Visual Builder) ---
+
+export interface Workflow {
+  id: string;
+  agentId: string;
+  name: string;
+  enabled: boolean;
+  nodesJson: string;
+  edgesJson: string;
   createdAt: Date;
   updatedAt: Date;
 }
