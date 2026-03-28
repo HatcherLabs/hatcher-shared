@@ -224,8 +224,8 @@ var FRAMEWORKS = {
     complexity: "advanced",
     bestFor: "Autonomous agents, task automation, multi-channel messaging",
     dockerImage: "hatcher/openclaw:latest",
-    port: 18789,
-    healthEndpoint: "/healthz",
+    port: 2138,
+    healthEndpoint: "/api/health",
     chatEndpoint: "/api/chat",
     features: ["3,200+ community skills", "Multi-channel gateway", "Browser automation", "Cron jobs & triggers"],
     docsUrl: "https://docs.openclaw.ai"
