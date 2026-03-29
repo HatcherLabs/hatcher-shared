@@ -1,4 +1,4 @@
-name: Deploy - Shared
+name: Deploy - Shared Package
 
 on:
   push:
@@ -9,11 +9,29 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     environment: production
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Build
+        run: npm run build
+
       - name: Deploy to production
         uses: appleboy/ssh-action@v1
         with:
@@ -25,19 +43,55 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-            cd /home/deploy/hatcher/packages/shared
+            SHARED_DIR="/home/deploy/hatcher/packages/shared"
+            API_MODULES="/home/deploy/hatcher/apps/api-repo/node_modules/@hatcher/shared"
+            FRONTEND_MODULES="/home/deploy/hatcher/apps/frontend/node_modules/@hatcher/shared"
 
-            echo "==> Pulling latest code..."
+            echo "==> Pulling latest shared package..."
+            cd "$SHARED_DIR"
             git pull origin main
 
-            echo "==> Building shared..."
+            echo "==> Installing shared package dependencies..."
+            npm ci --ignore-scripts
+
+            echo "==> Building @hatcher/shared..."
             npm run build
 
-            echo "==> Syncing to frontend node_modules..."
-            cp -r dist /home/deploy/hatcher/apps/frontend/node_modules/@hatcher/shared/dist
+            echo "==> Verifying build output..."
+            if [ ! -f "$SHARED_DIR/dist/index.js" ]; then
+              echo "ERROR: dist/index.js not found after build" >&2
+              exit 1
+            fi
 
-            echo "==> Restarting consumers..."
+            echo "==> Syncing dist/ to api-repo node_modules..."
+            mkdir -p "$API_MODULES"
+            rsync -a --delete "$SHARED_DIR/dist/" "$API_MODULES/dist/"
+            cp "$SHARED_DIR/package.json" "$API_MODULES/package.json"
+
+            echo "==> Syncing dist/ to frontend node_modules..."
+            mkdir -p "$FRONTEND_MODULES"
+            rsync -a --delete "$SHARED_DIR/dist/" "$FRONTEND_MODULES/dist/"
+            cp "$SHARED_DIR/package.json" "$FRONTEND_MODULES/package.json"
+
+            echo "==> Restarting PM2 services..."
             pm2 restart hatcher-api
             pm2 restart hatcher-web
+            pm2 restart hatcher-docs
+            pm2 restart hatcher-llm-proxy
+
+            echo "==> Health checks..."
+            sleep 3
+            if curl -sf http://localhost:3001/health > /dev/null 2>&1; then
+              echo "API health check passed"
+            else
+              echo "WARNING: API health check failed"
+              pm2 logs hatcher-api --lines 20 --nostream
+            fi
+            if curl -sf http://localhost:3000 > /dev/null 2>&1; then
+              echo "Frontend health check passed"
+            else
+              echo "WARNING: Frontend health check failed"
+            fi
 
             echo "==> Deploy complete at $(date '+%Y-%m-%d %H:%M:%S')"
+            echo "$(date '+%Y-%m-%d %H:%M:%S') | shared | $(git rev-parse --short HEAD) | $(git log -1 --pretty=%s)" >> /home/deploy/hatcher/logs/deploys.log
