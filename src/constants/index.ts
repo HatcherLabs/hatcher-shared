@@ -1484,7 +1484,7 @@ export type AgentTemplateId = typeof AGENT_TEMPLATES[number]['id'];
 
 // --- Agent Statuses ---
 
-export const AGENT_STATUSES = ['active', 'sleeping', 'paused', 'error', 'killed', 'restarting'] as const;
+export const AGENT_STATUSES = ['active', 'sleeping', 'paused', 'error', 'killed', 'restarting', 'stopping'] as const;
 
 export const AGENT_STATUS_CONFIG: Record<AgentStatus, { label: string; color: string; pulse: boolean }> = {
   active:     { label: 'Active',     color: 'bg-green-400',  pulse: true },
@@ -1493,6 +1493,7 @@ export const AGENT_STATUS_CONFIG: Record<AgentStatus, { label: string; color: st
   killed:     { label: 'Killed',     color: 'bg-gray-500',   pulse: false },
   error:      { label: 'Error',      color: 'bg-red-500',    pulse: false },
   restarting: { label: 'Restarting', color: 'bg-cyan-400',   pulse: true },
+  stopping:   { label: 'Stopping',   color: 'bg-yellow-400', pulse: true },
 };
 
 export const PAID_TIER = {

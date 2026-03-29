@@ -446,6 +446,8 @@ export interface LlmUsage {
 export type WSMessageType =
   | 'chat_message'
   | 'chat_response'
+  | 'chat_token'
+  | 'chat_done'
   | 'chat_error'
   | 'agent_status'
   | 'rate_limit';
