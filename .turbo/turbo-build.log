@@ -1,0 +1,18 @@
+
+> @hatcher/shared@1.0.0 build
+> tsup src/index.ts --format esm,cjs --dts
+
+CLI Building entry: src/index.ts
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Target: es2022
+ESM Build start
+CJS Build start
+ESM dist/index.mjs 77.63 KB
+ESM ⚡️ Build success in 28ms
+CJS dist/index.js 79.33 KB
+CJS ⚡️ Build success in 28ms
+DTS Build start
+DTS ⚡️ Build success in 455ms
+DTS dist/index.d.mts 88.62 KB
+DTS dist/index.d.ts  88.62 KB

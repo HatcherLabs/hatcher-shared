@@ -29,6 +29,7 @@ __export(index_exports, {
   BYOK_PROVIDER_ENV_VARS: () => BYOK_PROVIDER_ENV_VARS,
   FRAMEWORKS: () => FRAMEWORKS,
   FREE_TIER_MAX_AGENTS: () => FREE_TIER_MAX_AGENTS,
+  LEGACY_TIER_MAP: () => LEGACY_TIER_MAP,
   PAID_TIER: () => PAID_TIER,
   PRICING: () => PRICING,
   RATE_LIMITS: () => RATE_LIMITS,
@@ -68,29 +69,29 @@ var TIERS = {
     name: "Free",
     usdPrice: 0,
     includedAgents: 1,
-    messagesPerDay: 20,
+    messagesPerDay: 10,
     cpuLimit: 0.5,
     memoryMb: 1024,
-    storageMb: 150,
+    storageMb: 100,
     autoSleep: true,
-    autoSleepMinutes: 15,
+    autoSleepMinutes: 10,
     fileManager: false,
     fullLogs: false,
     prioritySupport: false
   },
-  basic: {
-    key: "basic",
-    name: "Basic",
-    usdPrice: 9.99,
+  starter: {
+    key: "starter",
+    name: "Starter",
+    usdPrice: 4.99,
     includedAgents: 1,
-    messagesPerDay: 100,
-    // 100/day with our key, BYOK = unlimited
+    messagesPerDay: 50,
+    // 50/day with our key, BYOK = unlimited
     cpuLimit: 1,
     memoryMb: 1536,
-    storageMb: 300,
+    storageMb: 200,
     autoSleep: true,
-    autoSleepMinutes: 360,
-    // 6 hours
+    autoSleepMinutes: 120,
+    // 2 hours
     fileManager: false,
     fullLogs: false,
     prioritySupport: false
@@ -98,29 +99,52 @@ var TIERS = {
   pro: {
     key: "pro",
     name: "Pro",
-    usdPrice: 19.99,
-    includedAgents: 5,
-    messagesPerDay: 300,
-    // 300/day with our key, BYOK = unlimited
-    cpuLimit: 2,
+    usdPrice: 14.99,
+    includedAgents: 3,
+    messagesPerDay: 200,
+    // 200/day per agent with our key, BYOK = unlimited
+    cpuLimit: 1.5,
     memoryMb: 2048,
-    storageMb: 600,
+    storageMb: 500,
+    autoSleep: false,
+    autoSleepMinutes: 0,
+    fileManager: false,
+    // Available as per-agent unlock in File Manager tab
+    fullLogs: true,
+    prioritySupport: false
+  },
+  business: {
+    key: "business",
+    name: "Business",
+    usdPrice: 39.99,
+    includedAgents: 10,
+    messagesPerDay: 500,
+    // 500/day per agent with our key, BYOK = unlimited
+    cpuLimit: 2,
+    memoryMb: 3072,
+    storageMb: 1024,
     autoSleep: false,
     autoSleepMinutes: 0,
     fileManager: true,
+    // Included for all agents
     fullLogs: true,
     prioritySupport: true
   }
 };
-var TIER_ORDER = ["free", "basic", "pro"];
+var TIER_ORDER = ["free", "starter", "pro", "business"];
+var LEGACY_TIER_MAP = {
+  basic: "starter",
+  unlimited: "starter"
+};
 var ADDONS = [
-  { key: "addon.agents.3", name: "+3 Agents", description: "3 additional agents", usdPrice: 4.99, type: "subscription", perAgent: false, extraAgents: 3 },
-  { key: "addon.agents.5", name: "+5 Agents", description: "5 additional agents", usdPrice: 7.99, type: "subscription", perAgent: false, extraAgents: 5 },
-  { key: "addon.agents.10", name: "+10 Agents", description: "10 additional agents", usdPrice: 14.99, type: "subscription", perAgent: false, extraAgents: 10 },
-  { key: "addon.file_manager", name: "File Manager", description: "Browse, edit & download agent files", usdPrice: 9.99, type: "one_time", perAgent: true }
+  { key: "addon.agents.3", name: "+3 Agents", description: "3 additional agents", usdPrice: 3.99, type: "subscription", perAgent: false, extraAgents: 3 },
+  { key: "addon.agents.10", name: "+10 Agents", description: "10 additional agents", usdPrice: 9.99, type: "subscription", perAgent: false, extraAgents: 10 },
+  { key: "addon.always_on", name: "Always On", description: "Keep agent running 24/7", usdPrice: 4.99, type: "subscription", perAgent: true },
+  { key: "addon.messages.200", name: "+200 msg/day", description: "200 extra messages per day", usdPrice: 2.99, type: "subscription", perAgent: true },
+  { key: "addon.file_manager", name: "File Manager", description: "Browse, edit & download files", usdPrice: 4.99, type: "one_time", perAgent: true }
 ];
 function getTier(key) {
-  const normalized = key === "unlimited" ? "basic" : key;
+  const normalized = LEGACY_TIER_MAP[key] ?? key;
   return TIERS[normalized] ?? TIERS.free;
 }
 function getAddon(key) {
@@ -1448,14 +1472,15 @@ You are **Creative Writing Assistant**, a versatile literary collaborator who he
     defaultSystemPrompt: ""
   }
 ];
-var AGENT_STATUSES = ["active", "sleeping", "paused", "error", "killed", "restarting"];
+var AGENT_STATUSES = ["active", "sleeping", "paused", "error", "killed", "restarting", "stopping"];
 var AGENT_STATUS_CONFIG = {
   active: { label: "Active", color: "bg-green-400", pulse: true },
   sleeping: { label: "Sleeping", color: "bg-blue-400", pulse: false },
   paused: { label: "Paused", color: "bg-red-400", pulse: false },
   killed: { label: "Killed", color: "bg-gray-500", pulse: false },
   error: { label: "Error", color: "bg-red-500", pulse: false },
-  restarting: { label: "Restarting", color: "bg-cyan-400", pulse: true }
+  restarting: { label: "Restarting", color: "bg-cyan-400", pulse: true },
+  stopping: { label: "Stopping", color: "bg-yellow-400", pulse: true }
 };
 var PAID_TIER = {
   maxActiveAgents: Infinity,
@@ -1482,6 +1507,7 @@ var PAID_TIER = {
   BYOK_PROVIDER_ENV_VARS,
   FRAMEWORKS,
   FREE_TIER_MAX_AGENTS,
+  LEGACY_TIER_MAP,
   PAID_TIER,
   PRICING,
   RATE_LIMITS,

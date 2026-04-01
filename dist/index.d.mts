@@ -33,7 +33,7 @@ interface UserPublic {
     referralCode: string | null;
     createdAt: Date;
 }
-type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting';
+type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting' | 'stopping';
 type AgentFramework = 'openclaw' | 'hermes' | 'elizaos' | 'milady';
 type Framework = AgentFramework;
 interface OpenClawGatewayAuth {
@@ -295,8 +295,10 @@ interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'ownerId'> 
     ownerAddress: string;
     features: AgentFeaturePublic[];
 }
-type UserTierKey = 'free' | 'basic' | 'pro';
-type AddonKey = 'addon.agents.3' | 'addon.agents.5' | 'addon.agents.10' | 'addon.file_manager';
+type UserTierKey = 'free' | 'starter' | 'pro' | 'business';
+/** @deprecated Use 'starter' instead. Kept for DB backward compat. */
+type LegacyTierKey = 'basic';
+type AddonKey = 'addon.agents.3' | 'addon.agents.10' | 'addon.always_on' | 'addon.messages.200' | 'addon.file_manager';
 type FeatureKey = UserTierKey | AddonKey;
 type FeatureType = 'subscription';
 interface AgentFeature {
@@ -370,7 +372,7 @@ interface LlmUsage {
     usdCost: number;
     createdAt: Date;
 }
-type WSMessageType = 'chat_message' | 'chat_response' | 'chat_error' | 'agent_status' | 'rate_limit';
+type WSMessageType = 'chat_message' | 'chat_response' | 'chat_token' | 'chat_done' | 'chat_error' | 'agent_status' | 'rate_limit';
 interface WSMessage {
     type: WSMessageType;
     payload: unknown;
@@ -609,6 +611,8 @@ interface TierConfig {
 }
 declare const TIERS: Record<UserTierKey, TierConfig>;
 declare const TIER_ORDER: UserTierKey[];
+/** Map legacy tier names to current ones (for DB backward compat) */
+declare const LEGACY_TIER_MAP: Record<string, UserTierKey>;
 interface AddonConfig {
     key: AddonKey;
     name: string;
@@ -888,7 +892,7 @@ declare const AGENT_TEMPLATES: readonly [{
     readonly defaultSystemPrompt: "";
 }];
 type AgentTemplateId = typeof AGENT_TEMPLATES[number]['id'];
-declare const AGENT_STATUSES: readonly ["active", "sleeping", "paused", "error", "killed", "restarting"];
+declare const AGENT_STATUSES: readonly ["active", "sleeping", "paused", "error", "killed", "restarting", "stopping"];
 declare const AGENT_STATUS_CONFIG: Record<AgentStatus, {
     label: string;
     color: string;
@@ -909,4 +913,4 @@ declare const PAID_TIER: {
     };
 };
 
-export { ACCOUNT_AGENT_LIMITS, ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_TEMPLATES, type AddonConfig, type AddonKey, type AdminStats, type Agent, type AgentAddon, type AgentConfig, type AgentFeature, type AgentFeaturePublic, type AgentFile, type AgentFramework, type AgentPublic, type AgentStatus, type AgentTemplateId, type AgentVersion, type ApiErr, type ApiOk, type ApiResponse, type AuthChallenge, type AuthToken, type BYOKConfig, type BYOKProvider, type BYOKProviderMeta, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CreditTransaction, type CreditTransactionType, type CustomDomain, type DomainSSLStatus, type ElizaOSConfig, FRAMEWORKS, FREE_TIER_MAX_AGENTS, type FeatureKey, type FeatureType, type FileManagerEntry, type Framework, type FrameworkMeta, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type LlmUsage, type MiladyConfig, type OpenClawAgentDef, type OpenClawAgents, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawCron, type OpenClawGateway, type OpenClawGatewayAuth, type OpenClawHooks, type OpenClawMessages, type OpenClawModelProvider, type OpenClawModelRef, type OpenClawModels, type OpenClawNativeConfig, type OpenClawSession, type OpenClawSkillsConfig, type OpenClawTTS, PAID_TIER, PRICING, type Payment, type PaymentStatus, RATE_LIMITS, type Referral, SOLANA_CONFIG, type ScheduledTask, type SslStatus, type SupportTicket, TIERS, TIER_ORDER, TOKEN_ECONOMY, type Team, type TeamMember, type TeamMemberRole, type TeamRole, type TeamWithMembers, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserPublic, type UserTierKey, type WSMessage, type WSMessageType, type Workflow, type WorkflowEdge, type WorkflowNode, type WorkflowNodeType, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
+export { ACCOUNT_AGENT_LIMITS, ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_TEMPLATES, type AddonConfig, type AddonKey, type AdminStats, type Agent, type AgentAddon, type AgentConfig, type AgentFeature, type AgentFeaturePublic, type AgentFile, type AgentFramework, type AgentPublic, type AgentStatus, type AgentTemplateId, type AgentVersion, type ApiErr, type ApiOk, type ApiResponse, type AuthChallenge, type AuthToken, type BYOKConfig, type BYOKProvider, type BYOKProviderMeta, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CreditTransaction, type CreditTransactionType, type CustomDomain, type DomainSSLStatus, type ElizaOSConfig, FRAMEWORKS, FREE_TIER_MAX_AGENTS, type FeatureKey, type FeatureType, type FileManagerEntry, type Framework, type FrameworkMeta, type HermesConfig, LEGACY_TIER_MAP, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type LegacyTierKey, type LlmUsage, type MiladyConfig, type OpenClawAgentDef, type OpenClawAgents, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawCron, type OpenClawGateway, type OpenClawGatewayAuth, type OpenClawHooks, type OpenClawMessages, type OpenClawModelProvider, type OpenClawModelRef, type OpenClawModels, type OpenClawNativeConfig, type OpenClawSession, type OpenClawSkillsConfig, type OpenClawTTS, PAID_TIER, PRICING, type Payment, type PaymentStatus, RATE_LIMITS, type Referral, SOLANA_CONFIG, type ScheduledTask, type SslStatus, type SupportTicket, TIERS, TIER_ORDER, TOKEN_ECONOMY, type Team, type TeamMember, type TeamMemberRole, type TeamRole, type TeamWithMembers, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserPublic, type UserTierKey, type WSMessage, type WSMessageType, type Workflow, type WorkflowEdge, type WorkflowNode, type WorkflowNodeType, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };

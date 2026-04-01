@@ -330,12 +330,16 @@ export interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'own
 
 // --- Subscription Tiers ---
 
-export type UserTierKey = 'free' | 'basic' | 'pro';
+export type UserTierKey = 'free' | 'starter' | 'pro' | 'business';
+
+/** @deprecated Use 'starter' instead. Kept for DB backward compat. */
+export type LegacyTierKey = 'basic';
 
 export type AddonKey =
   | 'addon.agents.3'
-  | 'addon.agents.5'
   | 'addon.agents.10'
+  | 'addon.always_on'
+  | 'addon.messages.200'
   | 'addon.file_manager';
 
 // FeatureKey is now tier + addon keys (kept for DB backward compat)

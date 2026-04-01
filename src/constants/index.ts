@@ -28,27 +28,27 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     name: 'Free',
     usdPrice: 0,
     includedAgents: 1,
-    messagesPerDay: 20,
+    messagesPerDay: 10,
     cpuLimit: 0.5,
     memoryMb: 1024,
-    storageMb: 150,
+    storageMb: 100,
     autoSleep: true,
-    autoSleepMinutes: 15,
+    autoSleepMinutes: 10,
     fileManager: false,
     fullLogs: false,
     prioritySupport: false,
   },
-  basic: {
-    key: 'basic',
-    name: 'Basic',
-    usdPrice: 9.99,
+  starter: {
+    key: 'starter',
+    name: 'Starter',
+    usdPrice: 4.99,
     includedAgents: 1,
-    messagesPerDay: 100, // 100/day with our key, BYOK = unlimited
+    messagesPerDay: 50, // 50/day with our key, BYOK = unlimited
     cpuLimit: 1,
     memoryMb: 1536,
-    storageMb: 300,
+    storageMb: 200,
     autoSleep: true,
-    autoSleepMinutes: 360, // 6 hours
+    autoSleepMinutes: 120, // 2 hours
     fileManager: false,
     fullLogs: false,
     prioritySupport: false,
@@ -56,21 +56,42 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
   pro: {
     key: 'pro',
     name: 'Pro',
-    usdPrice: 19.99,
-    includedAgents: 5,
-    messagesPerDay: 300, // 300/day with our key, BYOK = unlimited
-    cpuLimit: 2,
+    usdPrice: 14.99,
+    includedAgents: 3,
+    messagesPerDay: 200, // 200/day per agent with our key, BYOK = unlimited
+    cpuLimit: 1.5,
     memoryMb: 2048,
-    storageMb: 600,
+    storageMb: 500,
     autoSleep: false,
     autoSleepMinutes: 0,
-    fileManager: true,
+    fileManager: false, // Available as per-agent unlock in File Manager tab
+    fullLogs: true,
+    prioritySupport: false,
+  },
+  business: {
+    key: 'business',
+    name: 'Business',
+    usdPrice: 39.99,
+    includedAgents: 10,
+    messagesPerDay: 500, // 500/day per agent with our key, BYOK = unlimited
+    cpuLimit: 2,
+    memoryMb: 3072,
+    storageMb: 1024,
+    autoSleep: false,
+    autoSleepMinutes: 0,
+    fileManager: true, // Included for all agents
     fullLogs: true,
     prioritySupport: true,
   },
 };
 
-export const TIER_ORDER: UserTierKey[] = ['free', 'basic', 'pro'];
+export const TIER_ORDER: UserTierKey[] = ['free', 'starter', 'pro', 'business'];
+
+/** Map legacy tier names to current ones (for DB backward compat) */
+export const LEGACY_TIER_MAP: Record<string, UserTierKey> = {
+  basic: 'starter',
+  unlimited: 'starter',
+};
 
 // --- Add-ons ---
 
@@ -85,16 +106,16 @@ export interface AddonConfig {
 }
 
 export const ADDONS: AddonConfig[] = [
-  { key: 'addon.agents.3',  name: '+3 Agents',  description: '3 additional agents', usdPrice: 4.99,  type: 'subscription', perAgent: false, extraAgents: 3 },
-  { key: 'addon.agents.5',  name: '+5 Agents',  description: '5 additional agents', usdPrice: 7.99,  type: 'subscription', perAgent: false, extraAgents: 5 },
-  { key: 'addon.agents.10', name: '+10 Agents', description: '10 additional agents', usdPrice: 14.99, type: 'subscription', perAgent: false, extraAgents: 10 },
-  { key: 'addon.file_manager', name: 'File Manager', description: 'Browse, edit & download agent files', usdPrice: 9.99, type: 'one_time', perAgent: true },
+  { key: 'addon.agents.3',      name: '+3 Agents',      description: '3 additional agents',            usdPrice: 3.99,  type: 'subscription', perAgent: false, extraAgents: 3 },
+  { key: 'addon.agents.10',     name: '+10 Agents',     description: '10 additional agents',           usdPrice: 9.99,  type: 'subscription', perAgent: false, extraAgents: 10 },
+  { key: 'addon.always_on',     name: 'Always On',      description: 'Keep agent running 24/7',        usdPrice: 4.99,  type: 'subscription', perAgent: true },
+  { key: 'addon.messages.200',  name: '+200 msg/day',   description: '200 extra messages per day',     usdPrice: 2.99,  type: 'subscription', perAgent: true },
+  { key: 'addon.file_manager',  name: 'File Manager',   description: 'Browse, edit & download files',  usdPrice: 4.99,  type: 'one_time',    perAgent: true },
 ];
 
 // Helper: get tier config (falls back to free for unknown/legacy tiers)
 export function getTier(key: UserTierKey | string): TierConfig {
-  // Handle legacy 'unlimited' tier → map to 'basic'
-  const normalized = key === 'unlimited' ? 'basic' : key;
+  const normalized = LEGACY_TIER_MAP[key] ?? key;
   return TIERS[normalized as UserTierKey] ?? TIERS.free;
 }
 
