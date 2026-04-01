@@ -1060,10 +1060,10 @@ You are **Crypto Trading Analyst**, a sharp market intelligence system powered b
   },
   {
     id: 'hermes-researcher',
-    name: 'Research Assistant',
+    name: 'Deep Researcher',
     icon: '🔬',
     category: 'research',
-    description: 'Web search, summarization, citation, persistent knowledge building',
+    description: 'Web search, summarization, citation, persistent knowledge building (Hermes)',
     personality: 'Thorough, objective, citation-obsessed',
     defaultBio: 'Hermes-powered research assistant that searches the web, synthesizes findings, cites sources, and builds a growing knowledge base — every research session makes it smarter.',
     defaultTopics: ['web research', 'source summarization', 'fact-checking', 'citation management', 'competitive analysis', 'literature review'],
