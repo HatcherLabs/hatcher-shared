@@ -330,7 +330,7 @@ export interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'own
 
 // --- Subscription Tiers ---
 
-export type UserTierKey = 'free' | 'starter' | 'pro' | 'business';
+export type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
 
 /** @deprecated Use 'starter' instead. Kept for DB backward compat. */
 export type LegacyTierKey = 'basic';

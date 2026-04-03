@@ -83,9 +83,24 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     fullLogs: true,
     prioritySupport: true,
   },
+  founding_member: {
+    key: 'founding_member',
+    name: 'Founding Member',
+    usdPrice: 99,
+    includedAgents: 25,
+    messagesPerDay: 0,      // Unlimited
+    cpuLimit: 2,
+    memoryMb: 4096,
+    storageMb: 2048,
+    autoSleep: false,
+    autoSleepMinutes: 0,
+    fileManager: true,
+    fullLogs: true,
+    prioritySupport: true,
+  },
 };
 
-export const TIER_ORDER: UserTierKey[] = ['free', 'starter', 'pro', 'business'];
+export const TIER_ORDER: UserTierKey[] = ['free', 'starter', 'pro', 'business', 'founding_member'];
 
 /** Map legacy tier names to current ones (for DB backward compat) */
 export const LEGACY_TIER_MAP: Record<string, UserTierKey> = {
