@@ -48,11 +48,11 @@ jobs:
 
             echo "==> Updating @hatcher/shared in api-repo..."
             cd /home/deploy/hatcher/apps/api-repo
-            npm install @hatcher/shared@latest --registry=https://npm.pkg.github.com
+            npm install @hatcher/shared@npm:@hatcherlabs/shared@latest --registry=https://npm.pkg.github.com
             
             echo "==> Updating @hatcher/shared in frontend..."
             cd /home/deploy/hatcher/apps/frontend
-            npm install @hatcher/shared@latest --registry=https://npm.pkg.github.com
+            npm install @hatcher/shared@npm:@hatcherlabs/shared@latest --registry=https://npm.pkg.github.com
 
             echo "==> Restarting PM2 services..."
             pm2 restart hatcher-api
