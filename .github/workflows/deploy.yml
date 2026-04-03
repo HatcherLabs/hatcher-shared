@@ -9,28 +9,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     environment: production
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Type check
-        run: npm run type-check
-
-      - name: Build
-        run: npm run build
 
       - name: Deploy to production
         uses: appleboy/ssh-action@v1
@@ -44,8 +29,6 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
             SHARED_DIR="/home/deploy/hatcher/packages/shared"
-            API_MODULES="/home/deploy/hatcher/apps/api-repo/node_modules/@hatcher/shared"
-            FRONTEND_MODULES="/home/deploy/hatcher/apps/frontend/node_modules/@hatcher/shared"
 
             echo "==> Pulling latest shared package..."
             cd "$SHARED_DIR"
@@ -63,15 +46,13 @@ jobs:
               exit 1
             fi
 
-            echo "==> Syncing dist/ to api-repo node_modules..."
-            mkdir -p "$API_MODULES"
-            rsync -a --delete "$SHARED_DIR/dist/" "$API_MODULES/dist/"
-            cp "$SHARED_DIR/package.json" "$API_MODULES/package.json"
-
-            echo "==> Syncing dist/ to frontend node_modules..."
-            mkdir -p "$FRONTEND_MODULES"
-            rsync -a --delete "$SHARED_DIR/dist/" "$FRONTEND_MODULES/dist/"
-            cp "$SHARED_DIR/package.json" "$FRONTEND_MODULES/package.json"
+            echo "==> Updating @hatcher/shared in api-repo..."
+            cd /home/deploy/hatcher/apps/api-repo
+            npm install @hatcher/shared@latest --registry=https://npm.pkg.github.com
+            
+            echo "==> Updating @hatcher/shared in frontend..."
+            cd /home/deploy/hatcher/apps/frontend
+            npm install @hatcher/shared@latest --registry=https://npm.pkg.github.com
 
             echo "==> Restarting PM2 services..."
             pm2 restart hatcher-api
