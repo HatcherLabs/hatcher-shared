@@ -92,8 +92,8 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     cpuLimit: 2,
     memoryMb: 4096,
     storageMb: 2048,
-    autoSleep: false,
-    autoSleepMinutes: 0,
+    autoSleep: true,        // Beta: sleep idle agents like other plans (production: false/0)
+    autoSleepMinutes: 60,   // Beta: 1 hour idle → sleep (production: false/0)
     fileManager: true,
     fullLogs: true,
     prioritySupport: true,
