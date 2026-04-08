@@ -137,6 +137,8 @@ var BYOK_PROVIDERS = [
     requiresApiKey: true,
     requiresBaseUrl: false,
     models: [
+      { id: "openai/gpt-oss-20b", name: "GPT OSS 20B (Recommended)", context: "128K" },
+      { id: "openai/gpt-oss-120b", name: "GPT OSS 120B", context: "128K" },
       { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout 17B", context: "128K" },
       { id: "meta-llama/llama-4-maverick-17b-128e-instruct", name: "Llama 4 Maverick 17B", context: "128K" },
       { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", context: "128K" },
