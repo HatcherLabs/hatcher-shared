@@ -102,25 +102,24 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
 
 export const TIER_ORDER: UserTierKey[] = ['free', 'starter', 'pro', 'business', 'founding_member'];
 
-/** Map legacy tier names to current ones (for DB backward compat) */
-export const LEGACY_TIER_MAP: Record<string, UserTierKey> = {
-  basic: 'starter',
-  unlimited: 'starter',
-};
+// Helper: get tier config (falls back to free for unknown/legacy tiers)
+export function getTier(key: UserTierKey | string): TierConfig {
+  const legacyMap: Record<string, UserTierKey> = { basic: 'starter', unlimited: 'starter' };
+  const normalized = legacyMap[key] ?? key;
+  return TIERS[normalized as UserTierKey] ?? TIERS.free;
+}
 
 // --- Add-ons ---
 
-export interface AddonConfig {
+export const ADDONS: Array<{
   key: AddonKey;
   name: string;
   description: string;
   usdPrice: number;
   type: 'subscription' | 'one_time';
-  perAgent: boolean;       // true = purchased per agent, false = account-wide
-  extraAgents?: number;    // only for agent add-ons
-}
-
-export const ADDONS: AddonConfig[] = [
+  perAgent: boolean;
+  extraAgents?: number;
+}> = [
   { key: 'addon.agents.3',      name: '+3 Agents',      description: '3 additional agents',            usdPrice: 3.99,  type: 'subscription', perAgent: false, extraAgents: 3 },
   { key: 'addon.agents.10',     name: '+10 Agents',     description: '10 additional agents',           usdPrice: 9.99,  type: 'subscription', perAgent: false, extraAgents: 10 },
   { key: 'addon.always_on',     name: 'Always On',      description: 'Keep agent running 24/7',        usdPrice: 4.99,  type: 'subscription', perAgent: true },
@@ -128,27 +127,14 @@ export const ADDONS: AddonConfig[] = [
   { key: 'addon.file_manager',  name: 'File Manager',   description: 'Browse, edit & download files',  usdPrice: 4.99,  type: 'one_time',    perAgent: true },
 ];
 
-// Helper: get tier config (falls back to free for unknown/legacy tiers)
-export function getTier(key: UserTierKey | string): TierConfig {
-  const normalized = LEGACY_TIER_MAP[key] ?? key;
-  return TIERS[normalized as UserTierKey] ?? TIERS.free;
-}
-
 // Helper: get addon config
-export function getAddon(key: AddonKey): AddonConfig | undefined {
+export function getAddon(key: AddonKey): typeof ADDONS[number] | undefined {
   return ADDONS.find(a => a.key === key);
 }
 
-// --- Token Economy ---
-
-export const TOKEN_ECONOMY = {
-  symbol: 'TOKEN',
-  name: 'Token',
-} as const;
-
 // --- BYOK Providers & Models ---
 
-export interface BYOKProviderMeta {
+export const BYOK_PROVIDERS: Array<{
   key: import('../types/index.js').BYOKProvider;
   name: string;
   description: string;
@@ -156,9 +142,7 @@ export interface BYOKProviderMeta {
   requiresBaseUrl: boolean;
   defaultBaseUrl?: string;
   models: Array<{ id: string; name: string; context?: string }>;
-}
-
-export const BYOK_PROVIDERS: BYOKProviderMeta[] = [
+}> = [
   {
     key: 'groq',
     name: 'Groq',
@@ -245,7 +229,7 @@ export const BYOK_PROVIDERS: BYOKProviderMeta[] = [
 ];
 
 /** Get provider metadata by key */
-export function getBYOKProvider(key: string): BYOKProviderMeta | undefined {
+export function getBYOKProvider(key: string): typeof BYOK_PROVIDERS[number] | undefined {
   return BYOK_PROVIDERS.find(p => p.key === key);
 }
 
@@ -321,16 +305,6 @@ export const FRAMEWORKS: Record<AgentFramework, FrameworkMeta> = {
   },
 };
 
-// --- Rate Limiting ---
-
-export const RATE_LIMITS = {
-  apiRequestsPerWindow: 100,
-  windowMs: 60_000,
-  authAttemptsPerWindow: 10,
-  authWindowMs: 60_000,
-  chatMessagesPerMinute: 10,
-} as const;
-
 // --- Solana Config ---
 
 export const SOLANA_CONFIG = {
@@ -343,19 +317,7 @@ export const SOLANA_CONFIG = {
   authNonceExpirySecs: 300,
 } as const;
 
-// --- Account Agent Limits ---
-// Maps account feature key to max active agents allowed
-
-export const ACCOUNT_AGENT_LIMITS: Record<string, number> = {
-  'account.agents.5': 5,
-  'account.agents.20': 20,
-  'account.agents.unlimited': Infinity,
-};
-
-// Default (free tier) = 1 active agent
-export const FREE_TIER_MAX_AGENTS = 1;
-
-// --- Legacy Compat: PRICING and PAID_TIER ---
+// --- Legacy Compat: PRICING ---
 // Referenced by features.ts and tests. Will be refactored in features route rewrite.
 
 export const PRICING = {
@@ -375,19 +337,4 @@ export const AGENT_STATUS_CONFIG: Record<AgentStatus, { label: string; color: st
   error:      { label: 'Error',      color: 'bg-red-500',    pulse: false },
   restarting: { label: 'Restarting', color: 'bg-cyan-400',   pulse: true },
   stopping:   { label: 'Stopping',   color: 'bg-yellow-400', pulse: true },
-};
-
-export const PAID_TIER = {
-  maxActiveAgents: Infinity,
-  logRetentionHours: -1,
-  chatMessagesPerDay: Infinity,
-  researchTasksPerDay: Infinity,
-  tokenScansPerDay: Infinity,
-  walletWatcherMax: Infinity,
-  openclaw: {
-    maxSkills: Infinity,
-    skills: 'all' as const,
-    workflows: true,
-    triggers: true,
-  },
 };

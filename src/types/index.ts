@@ -4,20 +4,11 @@
 
 // --- API Response Wrapper ---
 
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
-export type ApiOk<T> = ApiResponse<T> & { success: true; data: T };
-export type ApiErr = ApiResponse<never> & { success: false; error: string };
-
-export function ok<T>(data: T): ApiOk<T> {
+export function ok<T>(data: T): { success: true; data: T } {
   return { success: true, data };
 }
 
-export function err(error: string): ApiErr {
+export function err(error: string): { success: false; error: string } {
   return { success: false, error };
 }
 
@@ -38,14 +29,6 @@ export interface User {
   createdAt: Date;
 }
 
-export interface UserPublic {
-  id: string;
-  username: string;
-  walletAddress: string | null;
-  referralCode: string | null;
-  createdAt: Date;
-}
-
 // --- Agent ---
 
 export type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting' | 'stopping';
@@ -54,60 +37,16 @@ export type Framework = AgentFramework;
 
 // ── OpenClaw Native Config Types (matches real openclaw.json) ──
 
-export interface OpenClawGatewayAuth {
-  mode?: string;
-  token?: string;
-}
-
-export interface OpenClawGateway {
-  port?: number;
-  bind?: string;
-  auth?: OpenClawGatewayAuth;
-  controlUi?: {
-    enabled?: boolean;
-    allowedOrigins?: string[];
-    dangerouslyAllowHostHeaderOriginFallback?: boolean;
-  };
-  http?: {
-    endpoints?: {
-      chatCompletions?: { enabled?: boolean };
-      responses?: { enabled?: boolean };
-    };
-  };
-}
-
-export interface OpenClawModelRef {
-  primary: string;
-  fallback?: string[];
-}
-
-export interface OpenClawModelProvider {
-  apiKey?: string;
-  baseUrl?: string;
-  api?: string;
-  models?: Array<{ id: string; name: string }>;
-}
-
-export interface OpenClawModels {
-  mode?: string;
-  providers?: Record<string, OpenClawModelProvider>;
-}
-
-export interface OpenClawAgentDef {
-  id?: string;
-  name?: string;
-  default?: boolean;
-  workspace?: string;
-  model?: OpenClawModelRef;
-  maxConcurrent?: number;
-  compaction?: { mode?: string };
-  subagents?: { maxConcurrent?: number };
-}
-
-export interface OpenClawAgents {
-  defaults?: Partial<OpenClawAgentDef>;
-  list?: OpenClawAgentDef[];
-}
+/** All valid OpenClaw channel identifiers */
+export type OpenClawChannelName =
+  // Main platforms
+  | 'telegram' | 'discord' | 'whatsapp' | 'slack'
+  | 'signal'
+  // Extra platforms
+  | 'irc' | 'googlechat' | 'msteams' | 'mattermost'
+  | 'line' | 'matrix' | 'nostr' | 'twitch'
+  | 'feishu' | 'nextcloud-talk' | 'synology-chat'
+  | 'tlon' | 'zalo' | 'bluebubbles';
 
 /** Per-channel behavior settings (stored in config_json.channelSettings) */
 export interface ChannelSettings {
@@ -138,17 +77,6 @@ export interface OpenClawChannel {
   [key: string]: unknown;
 }
 
-/** All valid OpenClaw channel identifiers */
-export type OpenClawChannelName =
-  // Main platforms
-  | 'telegram' | 'discord' | 'whatsapp' | 'slack'
-  | 'signal'
-  // Extra platforms
-  | 'irc' | 'googlechat' | 'msteams' | 'mattermost'
-  | 'line' | 'matrix' | 'nostr' | 'twitch'
-  | 'feishu' | 'nextcloud-talk' | 'synology-chat'
-  | 'tlon' | 'zalo' | 'bluebubbles';
-
 export interface OpenClawBinding {
   agentId: string;
   match: {
@@ -157,30 +85,14 @@ export interface OpenClawBinding {
   };
 }
 
-export interface OpenClawCron {
-  webhookToken?: string;
-}
-
-export interface OpenClawHooks {
-  path?: string;
-  allowedAgentIds?: string[];
-}
-
-/** OpenClaw TTS config — flat provider keys (e.g. `elevenlabs: { apiKey }`) */
-export interface OpenClawTTS {
-  provider?: string;
-  voice?: string;
-  elevenlabs?: { apiKey?: string };
-  openai?: { apiKey?: string };
-  edge?: Record<string, unknown>;
-}
-
 export interface OpenClawMessages {
-  tts?: OpenClawTTS;
-}
-
-export interface OpenClawSession {
-  dmScope?: string;
+  tts?: {
+    provider?: string;
+    voice?: string;
+    elevenlabs?: { apiKey?: string };
+    openai?: { apiKey?: string };
+    edge?: Record<string, unknown>;
+  };
 }
 
 export interface OpenClawSkillsConfig {
@@ -189,15 +101,75 @@ export interface OpenClawSkillsConfig {
 
 /** The real openclaw.json structure */
 export interface OpenClawNativeConfig {
-  gateway: OpenClawGateway;
-  models: OpenClawModels;
-  agents: OpenClawAgents;
+  gateway: {
+    port?: number;
+    bind?: string;
+    auth?: {
+      mode?: string;
+      token?: string;
+    };
+    controlUi?: {
+      enabled?: boolean;
+      allowedOrigins?: string[];
+      dangerouslyAllowHostHeaderOriginFallback?: boolean;
+    };
+    http?: {
+      endpoints?: {
+        chatCompletions?: { enabled?: boolean };
+        responses?: { enabled?: boolean };
+      };
+    };
+  };
+  models: {
+    mode?: string;
+    providers?: Record<string, {
+      apiKey?: string;
+      baseUrl?: string;
+      api?: string;
+      models?: Array<{ id: string; name: string }>;
+    }>;
+  };
+  agents: {
+    defaults?: Partial<{
+      id?: string;
+      name?: string;
+      default?: boolean;
+      workspace?: string;
+      model?: {
+        primary: string;
+        fallback?: string[];
+      };
+      maxConcurrent?: number;
+      compaction?: { mode?: string };
+      subagents?: { maxConcurrent?: number };
+    }>;
+    list?: Array<{
+      id?: string;
+      name?: string;
+      default?: boolean;
+      workspace?: string;
+      model?: {
+        primary: string;
+        fallback?: string[];
+      };
+      maxConcurrent?: number;
+      compaction?: { mode?: string };
+      subagents?: { maxConcurrent?: number };
+    }>;
+  };
   channels: Partial<Record<OpenClawChannelName, OpenClawChannel>>;
   bindings: OpenClawBinding[];
-  cron?: OpenClawCron;
-  hooks?: OpenClawHooks;
+  cron?: {
+    webhookToken?: string;
+  };
+  hooks?: {
+    path?: string;
+    allowedAgentIds?: string[];
+  };
   messages?: OpenClawMessages;
-  session?: OpenClawSession;
+  session?: {
+    dmScope?: string;
+  };
   skills?: OpenClawSkillsConfig;
   tools?: Record<string, unknown>;
   plugins?: {
@@ -253,33 +225,6 @@ export interface HermesConfig {
   }>>;
 }
 
-// --- ElizaOS Config ---
-
-export interface ElizaOSConfig {
-  name: string;
-  model?: string;
-  provider?: string;
-  systemPrompt?: string;
-  character?: {
-    name?: string;
-    bio?: string;
-    lore?: string[];
-    topics?: string[];
-    style?: {
-      all?: string[];
-      chat?: string[];
-      post?: string[];
-    };
-    adjectives?: string[];
-  };
-  plugins?: string[];
-  clients?: Array<'telegram' | 'discord' | 'twitter' | 'direct'>;
-  settings?: {
-    secrets?: Record<string, string>;
-    [key: string]: unknown;
-  };
-}
-
 // --- Milady Config ---
 
 export interface MiladyConfig {
@@ -306,7 +251,7 @@ export interface MiladyConfig {
 export type AgentConfig =
   | { framework: 'openclaw'; config: OpenClawConfig }
   | { framework: 'hermes'; config: HermesConfig }
-  | { framework: 'elizaos'; config: ElizaOSConfig }
+  | { framework: 'elizaos'; config: Record<string, unknown> }
   | { framework: 'milady'; config: MiladyConfig };
 
 export interface Agent {
@@ -328,17 +273,9 @@ export interface Agent {
   updatedAt: Date;
 }
 
-export interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'ownerId'> {
-  ownerAddress: string;
-  features: AgentFeaturePublic[];
-}
-
 // --- Subscription Tiers ---
 
 export type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
-
-/** @deprecated Use 'starter' instead. Kept for DB backward compat. */
-export type LegacyTierKey = 'basic';
 
 export type AddonKey =
   | 'addon.agents.3'
@@ -365,15 +302,7 @@ export interface AgentFeature {
   updatedAt: Date;
 }
 
-export interface AgentFeaturePublic {
-  featureKey: FeatureKey;
-  type: FeatureType;
-  expiresAt: Date | null;
-}
-
 // --- Payments ---
-
-export type PaymentStatus = 'pending' | 'confirmed' | 'failed' | 'refunded';
 
 export interface Payment {
   id: string;
@@ -383,7 +312,7 @@ export interface Payment {
   usdAmount: number;
   hatchAmount: number;
   txSignature: string;
-  status: PaymentStatus;
+  status: 'pending' | 'confirmed' | 'failed' | 'refunded';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -413,13 +342,8 @@ export interface BYOKConfig {
 
 export type LLMProvider = BYOKProvider | 'hatcher_proxy';
 
-export interface LLMMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
-}
-
 export interface LLMRequest {
-  messages: LLMMessage[];
+  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
   model?: string;
   temperature?: number;
   maxTokens?: number;
@@ -436,32 +360,10 @@ export interface LLMResponse {
   };
 }
 
-// --- LLM Usage Tracking ---
-
-export interface LlmUsage {
-  id: string;
-  userId: string;
-  agentId: string | null;
-  model: string;
-  inputTokens: number;
-  outputTokens: number;
-  usdCost: number;
-  createdAt: Date;
-}
-
 // --- WebSocket / Chat ---
 
-export type WSMessageType =
-  | 'chat_message'
-  | 'chat_response'
-  | 'chat_token'
-  | 'chat_done'
-  | 'chat_error'
-  | 'agent_status'
-  | 'rate_limit';
-
 export interface WSMessage {
-  type: WSMessageType;
+  type: 'chat_message' | 'chat_response' | 'chat_token' | 'chat_done' | 'chat_error' | 'agent_status' | 'rate_limit';
   payload: unknown;
 }
 
@@ -479,25 +381,6 @@ export interface AuthChallenge {
   nonce: string;
   message: string;
   expiresAt: Date;
-}
-
-export interface AuthToken {
-  token: string;
-  expiresAt: Date;
-  user: UserPublic;
-}
-
-// --- Agent File Manager ---
-
-export interface AgentFile {
-  id: string;
-  agentId: string;
-  name: string;
-  mimeType: string;
-  sizeBytes: number;
-  content: string | null;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 // --- Support Tickets ---
@@ -525,24 +408,9 @@ export interface SupportTicket {
   updatedAt: Date;
 }
 
-// --- File Manager ---
-
-export interface FileManagerEntry {
-  path: string;
-  size: number;
-  modified: Date;
-  isDirectory: boolean;
-}
-
-// --- Agent Add-on ---
-
-export type AgentAddon = 'agents_3' | 'agents_5' | 'agents_10';
-
 // --- Teams ---
 
 export type TeamRole = 'owner' | 'admin' | 'member' | 'viewer';
-/** @deprecated Use TeamRole instead */
-export type TeamMemberRole = TeamRole;
 
 export interface Team {
   id: string;
@@ -558,55 +426,24 @@ export interface TeamMember {
   userId: string;
   role: TeamRole;
   createdAt: Date;
-  user?: UserPublic;
-}
-
-export interface TeamWithMembers extends Team {
-  members: TeamMember[];
-  agentCount: number;
+  user?: {
+    id: string;
+    username: string;
+    walletAddress: string | null;
+    referralCode: string | null;
+    createdAt: Date;
+  };
 }
 
 // --- Custom Domains ---
-
-export type DomainSSLStatus = 'pending' | 'active' | 'error';
-/** @deprecated Use DomainSSLStatus instead */
-export type SslStatus = DomainSSLStatus;
 
 export interface CustomDomain {
   id: string;
   agentId: string;
   domain: string;
   verified: boolean;
-  sslStatus: DomainSSLStatus;
+  sslStatus: 'pending' | 'active' | 'error';
   cnameTarget: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// --- Agent Versioning ---
-
-export interface AgentVersion {
-  id: string;
-  agentId: string;
-  version: number;
-  configSnapshot: string; // JSON string
-  commitMessage: string | null;
-  createdBy: string | null;
-  createdAt: Date;
-}
-
-// --- Scheduled Tasks ---
-
-export interface ScheduledTask {
-  id: string;
-  agentId: string;
-  name: string;
-  schedule: string;
-  prompt: string;
-  enabled: boolean;
-  lastRunAt: Date | null;
-  nextRunAt: Date | null;
-  runCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -621,33 +458,11 @@ export interface Referral {
   createdAt: Date;
 }
 
-// --- Credit Transactions ---
-
-export type CreditTransactionType =
-  | 'referral_reward'
-  | 'subscription'
-  | 'addon'
-  | 'hosted_llm'
-  | 'top_up'
-  | 'stripe_purchase';
-
-export interface CreditTransaction {
-  id: string;
-  userId: string;
-  amount: number;
-  balance: number;
-  type: CreditTransactionType;
-  description: string | null;
-  createdAt: Date;
-}
-
 // --- Workflows (Visual Builder) ---
-
-export type WorkflowNodeType = 'trigger' | 'action' | 'condition' | 'response';
 
 export interface WorkflowNode {
   id: string;
-  type: WorkflowNodeType;
+  type: 'trigger' | 'action' | 'condition' | 'response';
   position: { x: number; y: number };
   data: {
     label: string;
@@ -697,4 +512,3 @@ export interface WsChatPayload {
   message: string;
   history?: WsChatMessage[];
 }
-
