@@ -536,7 +536,9 @@ export type AgentAddon = 'agents_3' | 'agents_5' | 'agents_10';
 
 // --- Teams ---
 
-export type TeamMemberRole = 'owner' | 'admin' | 'member' | 'viewer';
+export type TeamRole = 'owner' | 'admin' | 'member' | 'viewer';
+/** @deprecated Use TeamRole instead */
+export type TeamMemberRole = TeamRole;
 
 export interface Team {
   id: string;
@@ -550,20 +552,28 @@ export interface TeamMember {
   id: string;
   teamId: string;
   userId: string;
-  role: TeamMemberRole;
+  role: TeamRole;
   createdAt: Date;
+  user?: UserPublic;
+}
+
+export interface TeamWithMembers extends Team {
+  members: TeamMember[];
+  agentCount: number;
 }
 
 // --- Custom Domains ---
 
-export type SslStatus = 'pending' | 'active' | 'error';
+export type DomainSSLStatus = 'pending' | 'active' | 'error';
+/** @deprecated Use DomainSSLStatus instead */
+export type SslStatus = DomainSSLStatus;
 
 export interface CustomDomain {
   id: string;
   agentId: string;
   domain: string;
   verified: boolean;
-  sslStatus: SslStatus;
+  sslStatus: DomainSSLStatus;
   cnameTarget: string;
   createdAt: Date;
   updatedAt: Date;
@@ -575,7 +585,7 @@ export interface AgentVersion {
   id: string;
   agentId: string;
   version: number;
-  configSnapshot: string;
+  configSnapshot: string; // JSON string
   commitMessage: string | null;
   createdBy: string | null;
   createdAt: Date;
@@ -629,6 +639,28 @@ export interface CreditTransaction {
 
 // --- Workflows (Visual Builder) ---
 
+export type WorkflowNodeType = 'trigger' | 'action' | 'condition' | 'response';
+
+export interface WorkflowNode {
+  id: string;
+  type: WorkflowNodeType;
+  position: { x: number; y: number };
+  data: {
+    label: string;
+    nodeType: string; // e.g. 'message_received', 'send_message', 'if_else'
+    config: Record<string, unknown>;
+  };
+}
+
+export interface WorkflowEdge {
+  id: string;
+  source: string;
+  target: string;
+  sourceHandle?: string;
+  targetHandle?: string;
+  label?: string;
+}
+
 export interface Workflow {
   id: string;
   agentId: string;
@@ -662,90 +694,3 @@ export interface WsChatPayload {
   history?: WsChatMessage[];
 }
 
-// --- Teams (Collaboration) ---
-
-export type TeamRole = 'owner' | 'admin' | 'member' | 'viewer';
-
-export interface Team {
-  id: string;
-  name: string;
-  ownerId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface TeamMember {
-  id: string;
-  teamId: string;
-  userId: string;
-  role: TeamRole;
-  createdAt: Date;
-  user?: UserPublic;
-}
-
-export interface TeamWithMembers extends Team {
-  members: TeamMember[];
-  agentCount: number;
-}
-
-// --- Custom Domains ---
-
-export type DomainSSLStatus = 'pending' | 'active' | 'error';
-
-export interface CustomDomain {
-  id: string;
-  agentId: string;
-  domain: string;
-  verified: boolean;
-  sslStatus: DomainSSLStatus;
-  cnameTarget: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// --- Agent Versioning ---
-
-export interface AgentVersion {
-  id: string;
-  agentId: string;
-  version: number;
-  configSnapshot: string; // JSON string
-  commitMessage: string | null;
-  createdBy: string | null;
-  createdAt: Date;
-}
-
-// --- Workflows (Visual Builder) ---
-
-export type WorkflowNodeType = 'trigger' | 'action' | 'condition' | 'response';
-
-export interface WorkflowNode {
-  id: string;
-  type: WorkflowNodeType;
-  position: { x: number; y: number };
-  data: {
-    label: string;
-    nodeType: string; // e.g. 'message_received', 'send_message', 'if_else'
-    config: Record<string, unknown>;
-  };
-}
-
-export interface WorkflowEdge {
-  id: string;
-  source: string;
-  target: string;
-  sourceHandle?: string;
-  targetHandle?: string;
-  label?: string;
-}
-
-export interface Workflow {
-  id: string;
-  agentId: string;
-  name: string;
-  enabled: boolean;
-  nodes: WorkflowNode[];
-  edges: WorkflowEdge[];
-  createdAt: Date;
-  updatedAt: Date;
-}
