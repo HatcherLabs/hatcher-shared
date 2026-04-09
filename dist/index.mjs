@@ -11,8 +11,7 @@ var BYOK_PROVIDER_ENV_VARS = {
   google: "GOOGLE_API_KEY",
   groq: "GROQ_API_KEY",
   xai: "XAI_API_KEY",
-  openrouter: "OPENROUTER_API_KEY",
-  ollama: "OLLAMA_BASE_URL"
+  openrouter: "OPENROUTER_API_KEY"
 };
 
 // src/constants/index.ts
@@ -43,8 +42,7 @@ var TIERS = {
     memoryMb: 1536,
     storageMb: 200,
     autoSleep: true,
-    autoSleepMinutes: 30,
-    // Beta: 30 min (production: 120)
+    autoSleepMinutes: 120,
     fileManager: false,
     fullLogs: false,
     prioritySupport: false
@@ -59,10 +57,8 @@ var TIERS = {
     cpuLimit: 1.5,
     memoryMb: 2048,
     storageMb: 500,
-    autoSleep: true,
-    // Beta: sleep idle agents to conserve resources
-    autoSleepMinutes: 60,
-    // Beta: 1 hour idle → sleep (production: false/0)
+    autoSleep: false,
+    autoSleepMinutes: 0,
     fileManager: false,
     // Available as per-agent unlock in File Manager tab
     fullLogs: true,
@@ -78,10 +74,8 @@ var TIERS = {
     cpuLimit: 2,
     memoryMb: 3072,
     storageMb: 1024,
-    autoSleep: true,
-    // Beta: sleep idle agents to conserve resources
-    autoSleepMinutes: 60,
-    // Beta: 1 hour idle → sleep (production: false/0)
+    autoSleep: false,
+    autoSleepMinutes: 0,
     fileManager: true,
     // Included for all agents
     fullLogs: true,
@@ -97,10 +91,8 @@ var TIERS = {
     cpuLimit: 2,
     memoryMb: 4096,
     storageMb: 2048,
-    autoSleep: true,
-    // Beta: sleep idle agents like other plans (production: false/0)
-    autoSleepMinutes: 60,
-    // Beta: 1 hour idle → sleep (production: false/0)
+    autoSleep: false,
+    autoSleepMinutes: 0,
     fileManager: true,
     fullLogs: true,
     prioritySupport: true

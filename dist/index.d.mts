@@ -172,6 +172,11 @@ interface OpenClawNativeConfig {
     session?: OpenClawSession;
     skills?: OpenClawSkillsConfig;
     tools?: Record<string, unknown>;
+    plugins?: {
+        allow?: string[];
+        deny?: string[];
+        entries?: Record<string, unknown>;
+    };
     talk?: Record<string, unknown>;
     meta?: {
         lastTouchedVersion?: string;
@@ -300,7 +305,7 @@ type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
 type LegacyTierKey = 'basic';
 type AddonKey = 'addon.agents.3' | 'addon.agents.10' | 'addon.always_on' | 'addon.messages.200' | 'addon.file_manager';
 type FeatureKey = UserTierKey | AddonKey;
-type FeatureType = 'subscription';
+type FeatureType = 'subscription' | 'one_time';
 interface AgentFeature {
     id: string;
     agentId: string | null;
@@ -332,7 +337,7 @@ interface Payment {
     createdAt: Date;
     updatedAt: Date;
 }
-type BYOKProvider = 'openai' | 'anthropic' | 'google' | 'groq' | 'xai' | 'openrouter' | 'ollama';
+type BYOKProvider = 'openai' | 'anthropic' | 'google' | 'groq' | 'xai' | 'openrouter';
 /** Maps each BYOK provider to the env var name expected by frameworks */
 declare const BYOK_PROVIDER_ENV_VARS: Record<BYOKProvider, string>;
 interface BYOKConfig {
@@ -431,8 +436,50 @@ interface FileManagerEntry {
     isDirectory: boolean;
 }
 type AgentAddon = 'agents_3' | 'agents_5' | 'agents_10';
-type TeamMemberRole = 'owner' | 'admin' | 'member' | 'viewer';
-type SslStatus = 'pending' | 'active' | 'error';
+type TeamRole = 'owner' | 'admin' | 'member' | 'viewer';
+/** @deprecated Use TeamRole instead */
+type TeamMemberRole = TeamRole;
+interface Team {
+    id: string;
+    name: string;
+    ownerId: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+interface TeamMember {
+    id: string;
+    teamId: string;
+    userId: string;
+    role: TeamRole;
+    createdAt: Date;
+    user?: UserPublic;
+}
+interface TeamWithMembers extends Team {
+    members: TeamMember[];
+    agentCount: number;
+}
+type DomainSSLStatus = 'pending' | 'active' | 'error';
+/** @deprecated Use DomainSSLStatus instead */
+type SslStatus = DomainSSLStatus;
+interface CustomDomain {
+    id: string;
+    agentId: string;
+    domain: string;
+    verified: boolean;
+    sslStatus: DomainSSLStatus;
+    cnameTarget: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+interface AgentVersion {
+    id: string;
+    agentId: string;
+    version: number;
+    configSnapshot: string;
+    commitMessage: string | null;
+    createdBy: string | null;
+    createdAt: Date;
+}
 interface ScheduledTask {
     id: string;
     agentId: string;
@@ -461,94 +508,6 @@ interface CreditTransaction {
     balance: number;
     type: CreditTransactionType;
     description: string | null;
-    createdAt: Date;
-}
-interface AdminStats {
-    totalUsers: number;
-    totalAgents: number;
-    activeAgents: number;
-    totalFeaturesUnlocked: number;
-    totalPayments: number;
-}
-interface WsChatMessage {
-    role: 'user' | 'assistant';
-    content: string;
-}
-interface WsChatPayload {
-    message: string;
-    history?: WsChatMessage[];
-}
-type TeamRole = 'owner' | 'admin' | 'member' | 'viewer';
-interface Team {
-    id: string;
-    name: string;
-    ownerId: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
-interface Team {
-    id: string;
-    name: string;
-    ownerId: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
-interface TeamMember {
-    id: string;
-    teamId: string;
-    userId: string;
-    role: TeamMemberRole;
-    createdAt: Date;
-}
-interface TeamMember {
-    id: string;
-    teamId: string;
-    userId: string;
-    role: TeamRole;
-    createdAt: Date;
-    user?: UserPublic;
-}
-interface TeamWithMembers extends Team {
-    members: TeamMember[];
-    agentCount: number;
-}
-type DomainSSLStatus = 'pending' | 'active' | 'error';
-interface CustomDomain {
-    id: string;
-    agentId: string;
-    domain: string;
-    verified: boolean;
-    sslStatus: SslStatus;
-    cnameTarget: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
-interface CustomDomain {
-    id: string;
-    agentId: string;
-    domain: string;
-    verified: boolean;
-    sslStatus: DomainSSLStatus;
-    cnameTarget: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
-interface AgentVersion {
-    id: string;
-    agentId: string;
-    version: number;
-    configSnapshot: string;
-    commitMessage: string | null;
-    createdBy: string | null;
-    createdAt: Date;
-}
-interface AgentVersion {
-    id: string;
-    agentId: string;
-    version: number;
-    configSnapshot: string;
-    commitMessage: string | null;
-    createdBy: string | null;
     createdAt: Date;
 }
 type WorkflowNodeType = 'trigger' | 'action' | 'condition' | 'response';
@@ -583,15 +542,20 @@ interface Workflow {
     createdAt: Date;
     updatedAt: Date;
 }
-interface Workflow {
-    id: string;
-    agentId: string;
-    name: string;
-    enabled: boolean;
-    nodes: WorkflowNode[];
-    edges: WorkflowEdge[];
-    createdAt: Date;
-    updatedAt: Date;
+interface AdminStats {
+    totalUsers: number;
+    totalAgents: number;
+    activeAgents: number;
+    totalFeaturesUnlocked: number;
+    totalPayments: number;
+}
+interface WsChatMessage {
+    role: 'user' | 'assistant';
+    content: string;
+}
+interface WsChatPayload {
+    message: string;
+    history?: WsChatMessage[];
 }
 
 interface TierConfig {

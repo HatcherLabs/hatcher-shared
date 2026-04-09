@@ -200,6 +200,11 @@ export interface OpenClawNativeConfig {
   session?: OpenClawSession;
   skills?: OpenClawSkillsConfig;
   tools?: Record<string, unknown>;
+  plugins?: {
+    allow?: string[];
+    deny?: string[];
+    entries?: Record<string, unknown>;
+  };
   talk?: Record<string, unknown>;
   meta?: {
     lastTouchedVersion?: string;
@@ -385,7 +390,7 @@ export interface Payment {
 
 // --- BYOK (Bring Your Own Key) ---
 
-export type BYOKProvider = 'openai' | 'anthropic' | 'google' | 'groq' | 'xai' | 'openrouter' | 'ollama';
+export type BYOKProvider = 'openai' | 'anthropic' | 'google' | 'groq' | 'xai' | 'openrouter';
 
 /** Maps each BYOK provider to the env var name expected by frameworks */
 export const BYOK_PROVIDER_ENV_VARS: Record<BYOKProvider, string> = {
@@ -395,14 +400,13 @@ export const BYOK_PROVIDER_ENV_VARS: Record<BYOKProvider, string> = {
   groq: 'GROQ_API_KEY',
   xai: 'XAI_API_KEY',
   openrouter: 'OPENROUTER_API_KEY',
-  ollama: 'OLLAMA_BASE_URL',
 };
 
 export interface BYOKConfig {
   provider: BYOKProvider;
-  apiKey?: string; // encrypted at rest, absent for ollama
+  apiKey?: string;
   model?: string;
-  baseUrl?: string; // for ollama or custom endpoints
+  baseUrl?: string; // for custom endpoints
 }
 
 // --- LLM ---
