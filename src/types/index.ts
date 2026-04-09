@@ -344,7 +344,7 @@ export type AddonKey =
 
 // FeatureKey is now tier + addon keys (kept for DB backward compat)
 export type FeatureKey = UserTierKey | AddonKey;
-export type FeatureType = 'subscription';
+export type FeatureType = 'subscription' | 'one_time';
 
 export interface AgentFeature {
   id: string;
