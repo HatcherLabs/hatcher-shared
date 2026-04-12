@@ -1,18 +1,11 @@
-interface ApiResponse<T = unknown> {
-    success: boolean;
-    data?: T;
-    error?: string;
-}
-type ApiOk<T> = ApiResponse<T> & {
+declare function ok<T>(data: T): {
     success: true;
     data: T;
 };
-type ApiErr = ApiResponse<never> & {
+declare function err(error: string): {
     success: false;
     error: string;
 };
-declare function ok<T>(data: T): ApiOk<T>;
-declare function err(error: string): ApiErr;
 interface User {
     id: string;
     email: string;
@@ -26,75 +19,11 @@ interface User {
     isAdmin: boolean;
     createdAt: Date;
 }
-interface UserPublic {
-    id: string;
-    username: string;
-    walletAddress: string | null;
-    referralCode: string | null;
-    createdAt: Date;
-}
 type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting' | 'stopping';
 type AgentFramework = 'openclaw' | 'hermes' | 'elizaos' | 'milady';
 type Framework = AgentFramework;
-interface OpenClawGatewayAuth {
-    mode?: string;
-    token?: string;
-}
-interface OpenClawGateway {
-    port?: number;
-    bind?: string;
-    auth?: OpenClawGatewayAuth;
-    controlUi?: {
-        enabled?: boolean;
-        allowedOrigins?: string[];
-        dangerouslyAllowHostHeaderOriginFallback?: boolean;
-    };
-    http?: {
-        endpoints?: {
-            chatCompletions?: {
-                enabled?: boolean;
-            };
-            responses?: {
-                enabled?: boolean;
-            };
-        };
-    };
-}
-interface OpenClawModelRef {
-    primary: string;
-    fallback?: string[];
-}
-interface OpenClawModelProvider {
-    apiKey?: string;
-    baseUrl?: string;
-    api?: string;
-    models?: Array<{
-        id: string;
-        name: string;
-    }>;
-}
-interface OpenClawModels {
-    mode?: string;
-    providers?: Record<string, OpenClawModelProvider>;
-}
-interface OpenClawAgentDef {
-    id?: string;
-    name?: string;
-    default?: boolean;
-    workspace?: string;
-    model?: OpenClawModelRef;
-    maxConcurrent?: number;
-    compaction?: {
-        mode?: string;
-    };
-    subagents?: {
-        maxConcurrent?: number;
-    };
-}
-interface OpenClawAgents {
-    defaults?: Partial<OpenClawAgentDef>;
-    list?: OpenClawAgentDef[];
-}
+/** All valid OpenClaw channel identifiers */
+type OpenClawChannelName = 'telegram' | 'discord' | 'whatsapp' | 'slack' | 'signal' | 'irc' | 'googlechat' | 'msteams' | 'mattermost' | 'line' | 'matrix' | 'nostr' | 'twitch' | 'feishu' | 'nextcloud-talk' | 'synology-chat' | 'tlon' | 'zalo' | 'bluebubbles';
 /** Per-channel behavior settings (stored in config_json.channelSettings) */
 interface ChannelSettings {
     dmPolicy?: 'open' | 'allowlist' | 'disabled';
@@ -120,8 +49,6 @@ interface OpenClawChannel {
     account?: string;
     [key: string]: unknown;
 }
-/** All valid OpenClaw channel identifiers */
-type OpenClawChannelName = 'telegram' | 'discord' | 'whatsapp' | 'slack' | 'signal' | 'irc' | 'googlechat' | 'msteams' | 'mattermost' | 'line' | 'matrix' | 'nostr' | 'twitch' | 'feishu' | 'nextcloud-talk' | 'synology-chat' | 'tlon' | 'zalo' | 'bluebubbles';
 interface OpenClawBinding {
     agentId: string;
     match: {
@@ -129,30 +56,18 @@ interface OpenClawBinding {
         [key: string]: unknown;
     };
 }
-interface OpenClawCron {
-    webhookToken?: string;
-}
-interface OpenClawHooks {
-    path?: string;
-    allowedAgentIds?: string[];
-}
-/** OpenClaw TTS config — flat provider keys (e.g. `elevenlabs: { apiKey }`) */
-interface OpenClawTTS {
-    provider?: string;
-    voice?: string;
-    elevenlabs?: {
-        apiKey?: string;
-    };
-    openai?: {
-        apiKey?: string;
-    };
-    edge?: Record<string, unknown>;
-}
 interface OpenClawMessages {
-    tts?: OpenClawTTS;
-}
-interface OpenClawSession {
-    dmScope?: string;
+    tts?: {
+        provider?: string;
+        voice?: string;
+        elevenlabs?: {
+            apiKey?: string;
+        };
+        openai?: {
+            apiKey?: string;
+        };
+        edge?: Record<string, unknown>;
+    };
 }
 interface OpenClawSkillsConfig {
     load?: {
@@ -161,15 +76,90 @@ interface OpenClawSkillsConfig {
 }
 /** The real openclaw.json structure */
 interface OpenClawNativeConfig {
-    gateway: OpenClawGateway;
-    models: OpenClawModels;
-    agents: OpenClawAgents;
+    gateway: {
+        port?: number;
+        bind?: string;
+        auth?: {
+            mode?: string;
+            token?: string;
+        };
+        controlUi?: {
+            enabled?: boolean;
+            allowedOrigins?: string[];
+            dangerouslyAllowHostHeaderOriginFallback?: boolean;
+        };
+        http?: {
+            endpoints?: {
+                chatCompletions?: {
+                    enabled?: boolean;
+                };
+                responses?: {
+                    enabled?: boolean;
+                };
+            };
+        };
+    };
+    models: {
+        mode?: string;
+        providers?: Record<string, {
+            apiKey?: string;
+            baseUrl?: string;
+            api?: string;
+            models?: Array<{
+                id: string;
+                name: string;
+            }>;
+        }>;
+    };
+    agents: {
+        defaults?: Partial<{
+            id?: string;
+            name?: string;
+            default?: boolean;
+            workspace?: string;
+            model?: {
+                primary: string;
+                fallback?: string[];
+            };
+            maxConcurrent?: number;
+            compaction?: {
+                mode?: string;
+            };
+            subagents?: {
+                maxConcurrent?: number;
+            };
+        }>;
+        list?: Array<{
+            id?: string;
+            name?: string;
+            default?: boolean;
+            workspace?: string;
+            model?: {
+                primary: string;
+                fallback?: string[];
+            };
+            maxConcurrent?: number;
+            compaction?: {
+                mode?: string;
+            };
+            subagents?: {
+                maxConcurrent?: number;
+            };
+        }>;
+    };
     channels: Partial<Record<OpenClawChannelName, OpenClawChannel>>;
     bindings: OpenClawBinding[];
-    cron?: OpenClawCron;
-    hooks?: OpenClawHooks;
+    cron?: {
+        webhookToken?: string;
+    };
+    hooks?: {
+        path?: string;
+        allowedAgentIds?: string[];
+    };
     messages?: OpenClawMessages;
-    session?: OpenClawSession;
+    session?: {
+        dmScope?: string;
+    };
     skills?: OpenClawSkillsConfig;
     tools?: Record<string, unknown>;
     plugins?: {
@@ -223,30 +213,6 @@ interface HermesConfig {
         [key: string]: unknown;
     }>>;
 }
-interface ElizaOSConfig {
-    name: string;
-    model?: string;
-    provider?: string;
-    systemPrompt?: string;
-    character?: {
-        name?: string;
-        bio?: string;
-        lore?: string[];
-        topics?: string[];
-        style?: {
-            all?: string[];
-            chat?: string[];
-            post?: string[];
-        };
-        adjectives?: string[];
-    };
-    plugins?: string[];
-    clients?: Array<'telegram' | 'discord' | 'twitter' | 'direct'>;
-    settings?: {
-        secrets?: Record<string, string>;
-        [key: string]: unknown;
-    };
-}
 interface MiladyConfig {
     name: string;
     model?: string;
@@ -273,7 +239,7 @@ type AgentConfig = {
     config: HermesConfig;
 } | {
     framework: 'elizaos';
-    config: ElizaOSConfig;
+    config: Record<string, unknown>;
 } | {
     framework: 'milady';
     config: MiladyConfig;
@@ -296,13 +262,7 @@ interface Agent {
     createdAt: Date;
     updatedAt: Date;
 }
-interface AgentPublic extends Omit<Agent, 'config' | 'containerId' | 'ownerId'> {
-    ownerAddress: string;
-    features: AgentFeaturePublic[];
-}
 type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
-/** @deprecated Use 'starter' instead. Kept for DB backward compat. */
-type LegacyTierKey = 'basic';
 type AddonKey = 'addon.agents.3' | 'addon.agents.10' | 'addon.always_on' | 'addon.messages.200' | 'addon.file_manager';
 type FeatureKey = UserTierKey | AddonKey;
 type FeatureType = 'subscription' | 'one_time';
@@ -319,12 +279,6 @@ interface AgentFeature {
     createdAt: Date;
     updatedAt: Date;
 }
-interface AgentFeaturePublic {
-    featureKey: FeatureKey;
-    type: FeatureType;
-    expiresAt: Date | null;
-}
-type PaymentStatus = 'pending' | 'confirmed' | 'failed' | 'refunded';
 interface Payment {
     id: string;
     userId: string;
@@ -333,7 +287,7 @@ interface Payment {
     usdAmount: number;
     hatchAmount: number;
     txSignature: string;
-    status: PaymentStatus;
+    status: 'pending' | 'confirmed' | 'failed' | 'refunded';
     createdAt: Date;
     updatedAt: Date;
 }
@@ -347,12 +301,11 @@ interface BYOKConfig {
     baseUrl?: string;
 }
 type LLMProvider = BYOKProvider | 'hatcher_proxy';
-interface LLMMessage {
-    role: 'system' | 'user' | 'assistant';
-    content: string;
-}
 interface LLMRequest {
-    messages: LLMMessage[];
+    messages: Array<{
+        role: 'system' | 'user' | 'assistant';
+        content: string;
+    }>;
     model?: string;
     temperature?: number;
     maxTokens?: number;
@@ -367,19 +320,8 @@ interface LLMResponse {
         totalTokens: number;
     };
 }
-interface LlmUsage {
-    id: string;
-    userId: string;
-    agentId: string | null;
-    model: string;
-    inputTokens: number;
-    outputTokens: number;
-    usdCost: number;
-    createdAt: Date;
-}
-type WSMessageType = 'chat_message' | 'chat_response' | 'chat_token' | 'chat_done' | 'chat_error' | 'agent_status' | 'rate_limit';
 interface WSMessage {
-    type: WSMessageType;
+    type: 'chat_message' | 'chat_response' | 'chat_token' | 'chat_done' | 'chat_error' | 'agent_status' | 'rate_limit';
     payload: unknown;
 }
 interface ChatMessage {
@@ -393,21 +335,6 @@ interface AuthChallenge {
     nonce: string;
     message: string;
     expiresAt: Date;
-}
-interface AuthToken {
-    token: string;
-    expiresAt: Date;
-    user: UserPublic;
-}
-interface AgentFile {
-    id: string;
-    agentId: string;
-    name: string;
-    mimeType: string;
-    sizeBytes: number;
-    content: string | null;
-    createdAt: Date;
-    updatedAt: Date;
 }
 type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
 type TicketCategory = 'general' | 'billing' | 'technical' | 'feature_request' | 'bug_report';
@@ -429,16 +356,7 @@ interface SupportTicket {
     createdAt: Date;
     updatedAt: Date;
 }
-interface FileManagerEntry {
-    path: string;
-    size: number;
-    modified: Date;
-    isDirectory: boolean;
-}
-type AgentAddon = 'agents_3' | 'agents_5' | 'agents_10';
 type TeamRole = 'owner' | 'admin' | 'member' | 'viewer';
-/** @deprecated Use TeamRole instead */
-type TeamMemberRole = TeamRole;
 interface Team {
     id: string;
     name: string;
@@ -452,44 +370,21 @@ interface TeamMember {
     userId: string;
     role: TeamRole;
     createdAt: Date;
-    user?: UserPublic;
+    user?: {
+        id: string;
+        username: string;
+        walletAddress: string | null;
+        referralCode: string | null;
+        createdAt: Date;
+    };
 }
-interface TeamWithMembers extends Team {
-    members: TeamMember[];
-    agentCount: number;
-}
-type DomainSSLStatus = 'pending' | 'active' | 'error';
-/** @deprecated Use DomainSSLStatus instead */
-type SslStatus = DomainSSLStatus;
 interface CustomDomain {
     id: string;
     agentId: string;
     domain: string;
     verified: boolean;
-    sslStatus: DomainSSLStatus;
+    sslStatus: 'pending' | 'active' | 'error';
     cnameTarget: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
-interface AgentVersion {
-    id: string;
-    agentId: string;
-    version: number;
-    configSnapshot: string;
-    commitMessage: string | null;
-    createdBy: string | null;
-    createdAt: Date;
-}
-interface ScheduledTask {
-    id: string;
-    agentId: string;
-    name: string;
-    schedule: string;
-    prompt: string;
-    enabled: boolean;
-    lastRunAt: Date | null;
-    nextRunAt: Date | null;
-    runCount: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -500,20 +395,9 @@ interface Referral {
     rewardClaimed: boolean;
     createdAt: Date;
 }
-type CreditTransactionType = 'referral_reward' | 'subscription' | 'addon' | 'hosted_llm' | 'top_up' | 'stripe_purchase';
-interface CreditTransaction {
-    id: string;
-    userId: string;
-    amount: number;
-    balance: number;
-    type: CreditTransactionType;
-    description: string | null;
-    createdAt: Date;
-}
-type WorkflowNodeType = 'trigger' | 'action' | 'condition' | 'response';
 interface WorkflowNode {
     id: string;
-    type: WorkflowNodeType;
+    type: 'trigger' | 'action' | 'condition' | 'response';
     position: {
         x: number;
         y: number;
@@ -575,9 +459,8 @@ interface TierConfig {
 }
 declare const TIERS: Record<UserTierKey, TierConfig>;
 declare const TIER_ORDER: UserTierKey[];
-/** Map legacy tier names to current ones (for DB backward compat) */
-declare const LEGACY_TIER_MAP: Record<string, UserTierKey>;
-interface AddonConfig {
+declare function getTier(key: UserTierKey | string): TierConfig;
+declare const ADDONS: Array<{
     key: AddonKey;
     name: string;
     description: string;
@@ -585,15 +468,9 @@ interface AddonConfig {
     type: 'subscription' | 'one_time';
     perAgent: boolean;
     extraAgents?: number;
-}
-declare const ADDONS: AddonConfig[];
-declare function getTier(key: UserTierKey | string): TierConfig;
-declare function getAddon(key: AddonKey): AddonConfig | undefined;
-declare const TOKEN_ECONOMY: {
-    readonly symbol: "TOKEN";
-    readonly name: "Token";
-};
-interface BYOKProviderMeta {
+}>;
+declare function getAddon(key: AddonKey): typeof ADDONS[number] | undefined;
+declare const BYOK_PROVIDERS: Array<{
     key: BYOKProvider;
     name: string;
     description: string;
@@ -605,10 +482,9 @@ interface BYOKProviderMeta {
         name: string;
         context?: string;
     }>;
-}
-declare const BYOK_PROVIDERS: BYOKProviderMeta[];
+}>;
 /** Get provider metadata by key */
-declare function getBYOKProvider(key: string): BYOKProviderMeta | undefined;
+declare function getBYOKProvider(key: string): typeof BYOK_PROVIDERS[number] | undefined;
 interface FrameworkMeta {
     key: AgentFramework;
     name: string;
@@ -623,13 +499,6 @@ interface FrameworkMeta {
     chatEndpoint: string;
 }
 declare const FRAMEWORKS: Record<AgentFramework, FrameworkMeta>;
-declare const RATE_LIMITS: {
-    readonly apiRequestsPerWindow: 100;
-    readonly windowMs: 60000;
-    readonly authAttemptsPerWindow: 10;
-    readonly authWindowMs: 60000;
-    readonly chatMessagesPerMinute: 10;
-};
 declare const SOLANA_CONFIG: {
     readonly networks: {
         readonly mainnet: "mainnet-beta";
@@ -639,8 +508,6 @@ declare const SOLANA_CONFIG: {
     readonly minSolBalance: 0.001;
     readonly authNonceExpirySecs: 300;
 };
-declare const ACCOUNT_AGENT_LIMITS: Record<string, number>;
-declare const FREE_TIER_MAX_AGENTS = 1;
 declare const PRICING: {
     free: {
         usdPrice: number;
@@ -660,19 +527,5 @@ declare const AGENT_STATUS_CONFIG: Record<AgentStatus, {
     color: string;
     pulse: boolean;
 }>;
-declare const PAID_TIER: {
-    maxActiveAgents: number;
-    logRetentionHours: number;
-    chatMessagesPerDay: number;
-    researchTasksPerDay: number;
-    tokenScansPerDay: number;
-    walletWatcherMax: number;
-    openclaw: {
-        maxSkills: number;
-        skills: "all";
-        workflows: boolean;
-        triggers: boolean;
-    };
-};
 
-export { ACCOUNT_AGENT_LIMITS, ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, type AddonConfig, type AddonKey, type AdminStats, type Agent, type AgentAddon, type AgentConfig, type AgentFeature, type AgentFeaturePublic, type AgentFile, type AgentFramework, type AgentPublic, type AgentStatus, type AgentVersion, type ApiErr, type ApiOk, type ApiResponse, type AuthChallenge, type AuthToken, type BYOKConfig, type BYOKProvider, type BYOKProviderMeta, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CreditTransaction, type CreditTransactionType, type CustomDomain, type DomainSSLStatus, type ElizaOSConfig, FRAMEWORKS, FREE_TIER_MAX_AGENTS, type FeatureKey, type FeatureType, type FileManagerEntry, type Framework, type FrameworkMeta, type HermesConfig, LEGACY_TIER_MAP, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type LegacyTierKey, type LlmUsage, type MiladyConfig, type OpenClawAgentDef, type OpenClawAgents, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawCron, type OpenClawGateway, type OpenClawGatewayAuth, type OpenClawHooks, type OpenClawMessages, type OpenClawModelProvider, type OpenClawModelRef, type OpenClawModels, type OpenClawNativeConfig, type OpenClawSession, type OpenClawSkillsConfig, type OpenClawTTS, PAID_TIER, PRICING, type Payment, type PaymentStatus, RATE_LIMITS, type Referral, SOLANA_CONFIG, type ScheduledTask, type SslStatus, type SupportTicket, TIERS, TIER_ORDER, TOKEN_ECONOMY, type Team, type TeamMember, type TeamMemberRole, type TeamRole, type TeamWithMembers, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserPublic, type UserTierKey, type WSMessage, type WSMessageType, type Workflow, type WorkflowEdge, type WorkflowNode, type WorkflowNodeType, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
+export { ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, type AddonKey, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentStatus, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FRAMEWORKS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type HermesConfig, type LLMProvider, type LLMRequest, type LLMResponse, type MiladyConfig, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PRICING, type Payment, type Referral, SOLANA_CONFIG, type SupportTicket, TIERS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };

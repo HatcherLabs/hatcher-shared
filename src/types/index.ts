@@ -342,8 +342,13 @@ export interface BYOKConfig {
 
 export type LLMProvider = BYOKProvider | 'hatcher_proxy';
 
+export interface LLMMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
 export interface LLMRequest {
-  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
+  messages: LLMMessage[];
   model?: string;
   temperature?: number;
   maxTokens?: number;

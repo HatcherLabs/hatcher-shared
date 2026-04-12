@@ -20,22 +20,16 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
-  ACCOUNT_AGENT_LIMITS: () => ACCOUNT_AGENT_LIMITS,
   ADDONS: () => ADDONS,
   AGENT_STATUSES: () => AGENT_STATUSES,
   AGENT_STATUS_CONFIG: () => AGENT_STATUS_CONFIG,
   BYOK_PROVIDERS: () => BYOK_PROVIDERS,
   BYOK_PROVIDER_ENV_VARS: () => BYOK_PROVIDER_ENV_VARS,
   FRAMEWORKS: () => FRAMEWORKS,
-  FREE_TIER_MAX_AGENTS: () => FREE_TIER_MAX_AGENTS,
-  LEGACY_TIER_MAP: () => LEGACY_TIER_MAP,
-  PAID_TIER: () => PAID_TIER,
   PRICING: () => PRICING,
-  RATE_LIMITS: () => RATE_LIMITS,
   SOLANA_CONFIG: () => SOLANA_CONFIG,
   TIERS: () => TIERS,
   TIER_ORDER: () => TIER_ORDER,
-  TOKEN_ECONOMY: () => TOKEN_ECONOMY,
   err: () => err,
   getAddon: () => getAddon,
   getBYOKProvider: () => getBYOKProvider,
@@ -145,10 +139,11 @@ var TIERS = {
   }
 };
 var TIER_ORDER = ["free", "starter", "pro", "business", "founding_member"];
-var LEGACY_TIER_MAP = {
-  basic: "starter",
-  unlimited: "starter"
-};
+function getTier(key) {
+  const legacyMap = { basic: "starter", unlimited: "starter" };
+  const normalized = legacyMap[key] ?? key;
+  return TIERS[normalized] ?? TIERS.free;
+}
 var ADDONS = [
   { key: "addon.agents.3", name: "+3 Agents", description: "3 additional agents", usdPrice: 3.99, type: "subscription", perAgent: false, extraAgents: 3 },
   { key: "addon.agents.10", name: "+10 Agents", description: "10 additional agents", usdPrice: 9.99, type: "subscription", perAgent: false, extraAgents: 10 },
@@ -156,17 +151,9 @@ var ADDONS = [
   { key: "addon.messages.200", name: "+200 msg/day", description: "200 extra messages per day", usdPrice: 2.99, type: "subscription", perAgent: true },
   { key: "addon.file_manager", name: "File Manager", description: "Browse, edit & download files", usdPrice: 4.99, type: "one_time", perAgent: true }
 ];
-function getTier(key) {
-  const normalized = LEGACY_TIER_MAP[key] ?? key;
-  return TIERS[normalized] ?? TIERS.free;
-}
 function getAddon(key) {
   return ADDONS.find((a) => a.key === key);
 }
-var TOKEN_ECONOMY = {
-  symbol: "TOKEN",
-  name: "Token"
-};
 var BYOK_PROVIDERS = [
   {
     key: "groq",
@@ -309,13 +296,6 @@ var FRAMEWORKS = {
     docsUrl: "https://docs.milady.gg"
   }
 };
-var RATE_LIMITS = {
-  apiRequestsPerWindow: 100,
-  windowMs: 6e4,
-  authAttemptsPerWindow: 10,
-  authWindowMs: 6e4,
-  chatMessagesPerMinute: 10
-};
 var SOLANA_CONFIG = {
   networks: {
     mainnet: "mainnet-beta",
@@ -325,12 +305,6 @@ var SOLANA_CONFIG = {
   minSolBalance: 1e-3,
   authNonceExpirySecs: 300
 };
-var ACCOUNT_AGENT_LIMITS = {
-  "account.agents.5": 5,
-  "account.agents.20": 20,
-  "account.agents.unlimited": Infinity
-};
-var FREE_TIER_MAX_AGENTS = 1;
 var PRICING = {
   free: { usdPrice: 0, label: "Free", description: "Free baseline \u2014 1 agent, Groq LLM, BYOK always free" },
   paid: { usdPrice: 0, label: "A la carte", type: "one_time", description: "Unlock features individually with tokens" }
@@ -345,38 +319,18 @@ var AGENT_STATUS_CONFIG = {
   restarting: { label: "Restarting", color: "bg-cyan-400", pulse: true },
   stopping: { label: "Stopping", color: "bg-yellow-400", pulse: true }
 };
-var PAID_TIER = {
-  maxActiveAgents: Infinity,
-  logRetentionHours: -1,
-  chatMessagesPerDay: Infinity,
-  researchTasksPerDay: Infinity,
-  tokenScansPerDay: Infinity,
-  walletWatcherMax: Infinity,
-  openclaw: {
-    maxSkills: Infinity,
-    skills: "all",
-    workflows: true,
-    triggers: true
-  }
-};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ACCOUNT_AGENT_LIMITS,
   ADDONS,
   AGENT_STATUSES,
   AGENT_STATUS_CONFIG,
   BYOK_PROVIDERS,
   BYOK_PROVIDER_ENV_VARS,
   FRAMEWORKS,
-  FREE_TIER_MAX_AGENTS,
-  LEGACY_TIER_MAP,
-  PAID_TIER,
   PRICING,
-  RATE_LIMITS,
   SOLANA_CONFIG,
   TIERS,
   TIER_ORDER,
-  TOKEN_ECONOMY,
   err,
   getAddon,
   getBYOKProvider,
