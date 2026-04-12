@@ -20,6 +20,7 @@ export interface TierConfig {
   fileManager: boolean;
   fullLogs: boolean;
   prioritySupport: boolean;
+  maxPlugins: number;
 }
 
 export const TIERS: Record<UserTierKey, TierConfig> = {
@@ -37,6 +38,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     fileManager: false,
     fullLogs: false,
     prioritySupport: false,
+    maxPlugins: 3,
   },
   starter: {
     key: 'starter',
@@ -52,6 +54,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     fileManager: false,
     fullLogs: false,
     prioritySupport: false,
+    maxPlugins: 10,
   },
   pro: {
     key: 'pro',
@@ -67,6 +70,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     fileManager: false, // Available as per-agent unlock in File Manager tab
     fullLogs: true,
     prioritySupport: false,
+    maxPlugins: 25,
   },
   business: {
     key: 'business',
@@ -82,6 +86,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     fileManager: true, // Included for all agents
     fullLogs: true,
     prioritySupport: true,
+    maxPlugins: 50,
   },
   founding_member: {
     key: 'founding_member',
@@ -97,6 +102,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     fileManager: true,
     fullLogs: true,
     prioritySupport: true,
+    maxPlugins: 50,
   },
 };
 
@@ -131,6 +137,16 @@ export const ADDONS: Array<{
 export function getAddon(key: AddonKey): typeof ADDONS[number] | undefined {
   return ADDONS.find(a => a.key === key);
 }
+
+// --- Plugin Limits per Tier ---
+
+export const PLUGIN_LIMITS: Record<UserTierKey, number> = {
+  free: 3,
+  starter: 10,
+  pro: 25,
+  business: 50,
+  founding_member: 50,
+};
 
 // --- BYOK Providers & Models ---
 

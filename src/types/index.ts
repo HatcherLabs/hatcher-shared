@@ -517,3 +517,44 @@ export interface WsChatPayload {
   message: string;
   history?: WsChatMessage[];
 }
+
+// --- Plugin Install ---
+
+export type PluginType = 'skill' | 'plugin';
+
+export type PluginSource =
+  | 'clawhub'          // OpenClaw/Hermes skills from ClawHub
+  | 'clawhub-plugin'   // OpenClaw code plugins from ClawHub
+  | 'elizaos-registry' // ElizaOS npm plugins
+  | 'milady-skills'    // Milady skills from milady-ai/skills
+  | 'github';          // Hermes Python plugins from GitHub repos
+
+export type PluginStatus = 'pending' | 'installed' | 'failed' | 'uninstalled';
+
+export interface AgentPluginRecord {
+  id: string;
+  agentId: string;
+  pluginName: string;
+  pluginType: PluginType;
+  source: PluginSource;
+  status: PluginStatus;
+  version: string | null;
+  metadata: Record<string, unknown> | null;
+  installedAt: string | null;
+  error: string | null;
+}
+
+export interface PluginRegistryEntry {
+  name: string;
+  type: PluginType;
+  source: PluginSource;
+  description: string;
+  author?: string;
+  stars?: number;
+  installed: boolean;
+}
+
+export interface PluginLimits {
+  used: number;
+  max: number;
+}

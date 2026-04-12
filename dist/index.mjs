@@ -29,7 +29,8 @@ var TIERS = {
     autoSleepMinutes: 10,
     fileManager: false,
     fullLogs: false,
-    prioritySupport: false
+    prioritySupport: false,
+    maxPlugins: 3
   },
   starter: {
     key: "starter",
@@ -45,7 +46,8 @@ var TIERS = {
     autoSleepMinutes: 120,
     fileManager: false,
     fullLogs: false,
-    prioritySupport: false
+    prioritySupport: false,
+    maxPlugins: 10
   },
   pro: {
     key: "pro",
@@ -62,7 +64,8 @@ var TIERS = {
     fileManager: false,
     // Available as per-agent unlock in File Manager tab
     fullLogs: true,
-    prioritySupport: false
+    prioritySupport: false,
+    maxPlugins: 25
   },
   business: {
     key: "business",
@@ -79,7 +82,8 @@ var TIERS = {
     fileManager: true,
     // Included for all agents
     fullLogs: true,
-    prioritySupport: true
+    prioritySupport: true,
+    maxPlugins: 50
   },
   founding_member: {
     key: "founding_member",
@@ -95,7 +99,8 @@ var TIERS = {
     autoSleepMinutes: 0,
     fileManager: true,
     fullLogs: true,
-    prioritySupport: true
+    prioritySupport: true,
+    maxPlugins: 50
   }
 };
 var TIER_ORDER = ["free", "starter", "pro", "business", "founding_member"];
@@ -114,6 +119,13 @@ var ADDONS = [
 function getAddon(key) {
   return ADDONS.find((a) => a.key === key);
 }
+var PLUGIN_LIMITS = {
+  free: 3,
+  starter: 10,
+  pro: 25,
+  business: 50,
+  founding_member: 50
+};
 var BYOK_PROVIDERS = [
   {
     key: "groq",
@@ -286,6 +298,7 @@ export {
   BYOK_PROVIDERS,
   BYOK_PROVIDER_ENV_VARS,
   FRAMEWORKS,
+  PLUGIN_LIMITS,
   PRICING,
   SOLANA_CONFIG,
   TIERS,

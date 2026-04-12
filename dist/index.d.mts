@@ -301,11 +301,12 @@ interface BYOKConfig {
     baseUrl?: string;
 }
 type LLMProvider = BYOKProvider | 'hatcher_proxy';
+interface LLMMessage {
+    role: 'system' | 'user' | 'assistant';
+    content: string;
+}
 interface LLMRequest {
-    messages: Array<{
-        role: 'system' | 'user' | 'assistant';
-        content: string;
-    }>;
+    messages: LLMMessage[];
     model?: string;
     temperature?: number;
     maxTokens?: number;
@@ -441,6 +442,34 @@ interface WsChatPayload {
     message: string;
     history?: WsChatMessage[];
 }
+type PluginType = 'skill' | 'plugin';
+type PluginSource = 'clawhub' | 'clawhub-plugin' | 'elizaos-registry' | 'milady-skills' | 'github';
+type PluginStatus = 'pending' | 'installed' | 'failed' | 'uninstalled';
+interface AgentPluginRecord {
+    id: string;
+    agentId: string;
+    pluginName: string;
+    pluginType: PluginType;
+    source: PluginSource;
+    status: PluginStatus;
+    version: string | null;
+    metadata: Record<string, unknown> | null;
+    installedAt: string | null;
+    error: string | null;
+}
+interface PluginRegistryEntry {
+    name: string;
+    type: PluginType;
+    source: PluginSource;
+    description: string;
+    author?: string;
+    stars?: number;
+    installed: boolean;
+}
+interface PluginLimits {
+    used: number;
+    max: number;
+}
 
 interface TierConfig {
     key: UserTierKey;
@@ -456,6 +485,7 @@ interface TierConfig {
     fileManager: boolean;
     fullLogs: boolean;
     prioritySupport: boolean;
+    maxPlugins: number;
 }
 declare const TIERS: Record<UserTierKey, TierConfig>;
 declare const TIER_ORDER: UserTierKey[];
@@ -470,6 +500,7 @@ declare const ADDONS: Array<{
     extraAgents?: number;
 }>;
 declare function getAddon(key: AddonKey): typeof ADDONS[number] | undefined;
+declare const PLUGIN_LIMITS: Record<UserTierKey, number>;
 declare const BYOK_PROVIDERS: Array<{
     key: BYOKProvider;
     name: string;
@@ -528,4 +559,4 @@ declare const AGENT_STATUS_CONFIG: Record<AgentStatus, {
     pulse: boolean;
 }>;
 
-export { ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, type AddonKey, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentStatus, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FRAMEWORKS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type HermesConfig, type LLMProvider, type LLMRequest, type LLMResponse, type MiladyConfig, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PRICING, type Payment, type Referral, SOLANA_CONFIG, type SupportTicket, TIERS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
+export { ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, type AddonKey, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentPluginRecord, type AgentStatus, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FRAMEWORKS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type MiladyConfig, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PLUGIN_LIMITS, PRICING, type Payment, type PluginLimits, type PluginRegistryEntry, type PluginSource, type PluginStatus, type PluginType, type Referral, SOLANA_CONFIG, type SupportTicket, TIERS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
