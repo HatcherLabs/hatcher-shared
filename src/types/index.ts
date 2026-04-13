@@ -527,7 +527,8 @@ export type PluginSource =
   | 'clawhub-plugin'   // OpenClaw code plugins from ClawHub
   | 'elizaos-registry' // ElizaOS npm plugins
   | 'milady-skills'    // Milady skills from milady-ai/skills
-  | 'github';          // Hermes Python plugins from GitHub repos
+  | 'github'           // Hermes Python plugins from GitHub repos
+  | 'npm';             // OpenClaw plugins from npm registry
 
 export type PluginStatus = 'pending' | 'installed' | 'failed' | 'uninstalled';
 

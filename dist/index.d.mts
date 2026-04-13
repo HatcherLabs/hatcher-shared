@@ -443,7 +443,7 @@ interface WsChatPayload {
     history?: WsChatMessage[];
 }
 type PluginType = 'skill' | 'plugin';
-type PluginSource = 'clawhub' | 'clawhub-plugin' | 'elizaos-registry' | 'milady-skills' | 'github';
+type PluginSource = 'clawhub' | 'clawhub-plugin' | 'elizaos-registry' | 'milady-skills' | 'github' | 'npm';
 type PluginStatus = 'pending' | 'installed' | 'failed' | 'uninstalled';
 interface AgentPluginRecord {
     id: string;
