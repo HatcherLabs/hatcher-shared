@@ -278,11 +278,20 @@ export interface Agent {
 export type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
 
 export type AddonKey =
+  | 'addon.agents.1'
   | 'addon.agents.3'
+  | 'addon.agents.5'
   | 'addon.agents.10'
   | 'addon.always_on'
+  | 'addon.messages.20'
+  | 'addon.messages.50'
+  | 'addon.messages.100'
   | 'addon.messages.200'
-  | 'addon.file_manager';
+  | 'addon.searches.25'
+  | 'addon.searches.50'
+  | 'addon.file_manager'
+  | 'addon.full_logs'
+  | 'addon.extra_plugins';
 
 // FeatureKey is now tier + addon keys (kept for DB backward compat)
 export type FeatureKey = UserTierKey | AddonKey;

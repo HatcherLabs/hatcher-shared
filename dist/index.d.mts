@@ -263,7 +263,7 @@ interface Agent {
     updatedAt: Date;
 }
 type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
-type AddonKey = 'addon.agents.3' | 'addon.agents.10' | 'addon.always_on' | 'addon.messages.200' | 'addon.file_manager';
+type AddonKey = 'addon.agents.1' | 'addon.agents.3' | 'addon.agents.5' | 'addon.agents.10' | 'addon.always_on' | 'addon.messages.20' | 'addon.messages.50' | 'addon.messages.100' | 'addon.messages.200' | 'addon.searches.25' | 'addon.searches.50' | 'addon.file_manager' | 'addon.full_logs' | 'addon.extra_plugins';
 type FeatureKey = UserTierKey | AddonKey;
 type FeatureType = 'subscription' | 'one_time';
 interface AgentFeature {
@@ -477,6 +477,7 @@ interface TierConfig {
     usdPrice: number;
     includedAgents: number;
     messagesPerDay: number;
+    searchesPerDay: number;
     cpuLimit: number;
     memoryMb: number;
     storageMb: number;
@@ -489,16 +490,30 @@ interface TierConfig {
 }
 declare const TIERS: Record<UserTierKey, TierConfig>;
 declare const TIER_ORDER: UserTierKey[];
+/** Absolute cap on Founding Member slots. Hard-coded here (not in the DB)
+ *  so the limit ships with every release and can't be silently raised by
+ *  a rogue admin query. The backend counts users with tier='founding_member'
+ *  and refuses new purchases once `FOUNDING_MEMBER_MAX_SLOTS` is reached. */
+declare const FOUNDING_MEMBER_MAX_SLOTS = 20;
 declare function getTier(key: UserTierKey | string): TierConfig;
-declare const ADDONS: Array<{
+interface AddonConfig {
     key: AddonKey;
     name: string;
     description: string;
     usdPrice: number;
     type: 'subscription' | 'one_time';
+    /** true = one purchase per agent; false = account-level (stackable). */
     perAgent: boolean;
+    /** Number of extra agent slots this addon grants. */
     extraAgents?: number;
-}>;
+    /** Number of extra daily messages this addon grants (account-level). */
+    extraMessages?: number;
+    /** Number of extra daily web searches this addon grants (account-level). */
+    extraSearches?: number;
+    /** Number of extra plugin+skill slots this addon grants. */
+    extraPlugins?: number;
+}
+declare const ADDONS: AddonConfig[];
 declare function getAddon(key: AddonKey): typeof ADDONS[number] | undefined;
 declare const PLUGIN_LIMITS: Record<UserTierKey, number>;
 declare const BYOK_PROVIDERS: Array<{
@@ -559,4 +574,4 @@ declare const AGENT_STATUS_CONFIG: Record<AgentStatus, {
     pulse: boolean;
 }>;
 
-export { ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, type AddonKey, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentPluginRecord, type AgentStatus, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FRAMEWORKS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type MiladyConfig, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PLUGIN_LIMITS, PRICING, type Payment, type PluginLimits, type PluginRegistryEntry, type PluginSource, type PluginStatus, type PluginType, type Referral, SOLANA_CONFIG, type SupportTicket, TIERS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
+export { ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, type AddonConfig, type AddonKey, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentPluginRecord, type AgentStatus, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FOUNDING_MEMBER_MAX_SLOTS, FRAMEWORKS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type MiladyConfig, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PLUGIN_LIMITS, PRICING, type Payment, type PluginLimits, type PluginRegistryEntry, type PluginSource, type PluginStatus, type PluginType, type Referral, SOLANA_CONFIG, type SupportTicket, TIERS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };

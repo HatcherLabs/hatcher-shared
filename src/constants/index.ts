@@ -12,6 +12,7 @@ export interface TierConfig {
   usdPrice: number;       // 0 = free
   includedAgents: number;
   messagesPerDay: number;  // 0 = unlimited
+  searchesPerDay: number;  // web search quota per user per day, 0 = unlimited
   cpuLimit: number;        // CPU cores
   memoryMb: number;        // RAM in MB
   storageMb: number;       // Workspace in MB
@@ -29,61 +30,65 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     name: 'Free',
     usdPrice: 0,
     includedAgents: 1,
-    messagesPerDay: 10,
+    messagesPerDay: 20,     // shared across all agents in the account
+    searchesPerDay: 3,
     cpuLimit: 0.5,
     memoryMb: 1024,
-    storageMb: 100,
+    storageMb: 50,
     autoSleep: true,
-    autoSleepMinutes: 10,
-    fileManager: false,
-    fullLogs: false,
+    autoSleepMinutes: 60,   // 1 hour idle
+    fileManager: false,      // available as per-agent addon
+    fullLogs: false,         // available as account addon
     prioritySupport: false,
-    maxPlugins: 3,
+    maxPlugins: 3,           // plugins + skills share the same cap
   },
   starter: {
     key: 'starter',
     name: 'Starter',
-    usdPrice: 4.99,
+    usdPrice: 6.99,
     includedAgents: 1,
-    messagesPerDay: 50, // 50/day with our key, BYOK = unlimited
+    messagesPerDay: 50,     // BYOK = unlimited
+    searchesPerDay: 10,
     cpuLimit: 1,
     memoryMb: 1536,
-    storageMb: 200,
+    storageMb: 150,
     autoSleep: true,
-    autoSleepMinutes: 120,
-    fileManager: false,
-    fullLogs: false,
+    autoSleepMinutes: 240,  // 4 hours idle
+    fileManager: false,      // available as per-agent addon
+    fullLogs: false,         // available as account addon
     prioritySupport: false,
     maxPlugins: 10,
   },
   pro: {
     key: 'pro',
     name: 'Pro',
-    usdPrice: 14.99,
+    usdPrice: 19.99,
     includedAgents: 3,
-    messagesPerDay: 200, // 200/day per agent with our key, BYOK = unlimited
+    messagesPerDay: 100,    // BYOK = unlimited
+    searchesPerDay: 50,
     cpuLimit: 1.5,
     memoryMb: 2048,
     storageMb: 500,
-    autoSleep: false,
-    autoSleepMinutes: 0,
-    fileManager: false, // Available as per-agent unlock in File Manager tab
-    fullLogs: true,
+    autoSleep: true,
+    autoSleepMinutes: 720,  // 12 hours idle — buy Always On addon for 24/7
+    fileManager: false,      // available as per-agent addon
+    fullLogs: false,         // available as account addon
     prioritySupport: false,
     maxPlugins: 25,
   },
   business: {
     key: 'business',
     name: 'Business',
-    usdPrice: 39.99,
+    usdPrice: 49.99,
     includedAgents: 10,
-    messagesPerDay: 500, // 500/day per agent with our key, BYOK = unlimited
+    messagesPerDay: 300,    // BYOK = unlimited
+    searchesPerDay: 200,
     cpuLimit: 2,
     memoryMb: 3072,
     storageMb: 1024,
-    autoSleep: false,
+    autoSleep: false,        // always-on included
     autoSleepMinutes: 0,
-    fileManager: true, // Included for all agents
+    fileManager: true,       // included for all agents
     fullLogs: true,
     prioritySupport: true,
     maxPlugins: 50,
@@ -92,11 +97,12 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
     key: 'founding_member',
     name: 'Founding Member',
     usdPrice: 99,
-    includedAgents: 25,
-    messagesPerDay: 0,      // Unlimited
+    includedAgents: 10,      // was 25 — capped like Business
+    messagesPerDay: 300,     // same as Business (not unlimited)
+    searchesPerDay: 200,     // same as Business
     cpuLimit: 2,
-    memoryMb: 4096,
-    storageMb: 2048,
+    memoryMb: 4096,          // bonus: 4GB vs Business 3GB
+    storageMb: 2048,         // bonus: 2GB vs Business 1GB
     autoSleep: false,
     autoSleepMinutes: 0,
     fileManager: true,
@@ -108,6 +114,12 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
 
 export const TIER_ORDER: UserTierKey[] = ['free', 'starter', 'pro', 'business', 'founding_member'];
 
+/** Absolute cap on Founding Member slots. Hard-coded here (not in the DB)
+ *  so the limit ships with every release and can't be silently raised by
+ *  a rogue admin query. The backend counts users with tier='founding_member'
+ *  and refuses new purchases once `FOUNDING_MEMBER_MAX_SLOTS` is reached. */
+export const FOUNDING_MEMBER_MAX_SLOTS = 20;
+
 // Helper: get tier config (falls back to free for unknown/legacy tiers)
 export function getTier(key: UserTierKey | string): TierConfig {
   const legacyMap: Record<string, UserTierKey> = { basic: 'starter', unlimited: 'starter' };
@@ -117,20 +129,52 @@ export function getTier(key: UserTierKey | string): TierConfig {
 
 // --- Add-ons ---
 
-export const ADDONS: Array<{
+export interface AddonConfig {
   key: AddonKey;
   name: string;
   description: string;
   usdPrice: number;
   type: 'subscription' | 'one_time';
+  /** true = one purchase per agent; false = account-level (stackable). */
   perAgent: boolean;
+  /** Number of extra agent slots this addon grants. */
   extraAgents?: number;
-}> = [
-  { key: 'addon.agents.3',      name: '+3 Agents',      description: '3 additional agents',            usdPrice: 3.99,  type: 'subscription', perAgent: false, extraAgents: 3 },
-  { key: 'addon.agents.10',     name: '+10 Agents',     description: '10 additional agents',           usdPrice: 9.99,  type: 'subscription', perAgent: false, extraAgents: 10 },
-  { key: 'addon.always_on',     name: 'Always On',      description: 'Keep agent running 24/7',        usdPrice: 4.99,  type: 'subscription', perAgent: true },
-  { key: 'addon.messages.200',  name: '+200 msg/day',   description: '200 extra messages per day',     usdPrice: 2.99,  type: 'subscription', perAgent: true },
-  { key: 'addon.file_manager',  name: 'File Manager',   description: 'Browse, edit & download files',  usdPrice: 4.99,  type: 'one_time',    perAgent: true },
+  /** Number of extra daily messages this addon grants (account-level). */
+  extraMessages?: number;
+  /** Number of extra daily web searches this addon grants (account-level). */
+  extraSearches?: number;
+  /** Number of extra plugin+skill slots this addon grants. */
+  extraPlugins?: number;
+}
+
+export const ADDONS: AddonConfig[] = [
+  // ── Agent capacity (account-level, stackable) ────────────────
+  { key: 'addon.agents.1',       name: '+1 Agent',       description: '1 additional agent slot',           usdPrice: 2.99,   type: 'subscription', perAgent: false, extraAgents: 1 },
+  { key: 'addon.agents.3',       name: '+3 Agents',      description: '3 additional agent slots',          usdPrice: 6.99,   type: 'subscription', perAgent: false, extraAgents: 3 },
+  { key: 'addon.agents.5',       name: '+5 Agents',      description: '5 additional agent slots',          usdPrice: 11.99,  type: 'subscription', perAgent: false, extraAgents: 5 },
+  { key: 'addon.agents.10',      name: '+10 Agents',     description: '10 additional agent slots',         usdPrice: 19.99,  type: 'subscription', perAgent: false, extraAgents: 10 },
+  // ── Always On (per-agent) ────────────────────────────────────
+  { key: 'addon.always_on',      name: 'Always On',      description: 'Keep this agent running 24/7',      usdPrice: 7.99,   type: 'subscription', perAgent: true },
+  // ── Extra messages (account-level, stackable) ────────────────
+  { key: 'addon.messages.20',    name: '+20 msg/day',    description: '20 extra messages per day',         usdPrice: 1.99,   type: 'subscription', perAgent: false, extraMessages: 20 },
+  { key: 'addon.messages.50',    name: '+50 msg/day',    description: '50 extra messages per day',         usdPrice: 3.99,   type: 'subscription', perAgent: false, extraMessages: 50 },
+  { key: 'addon.messages.100',   name: '+100 msg/day',   description: '100 extra messages per day',        usdPrice: 5.99,   type: 'subscription', perAgent: false, extraMessages: 100 },
+  { key: 'addon.messages.200',   name: '+200 msg/day',   description: '200 extra messages per day',        usdPrice: 9.99,   type: 'subscription', perAgent: false, extraMessages: 200 },
+  // ── Extra searches (account-level, stackable) ────────────────
+  { key: 'addon.searches.25',    name: '+25 searches/day', description: '25 extra web searches per day',   usdPrice: 3.99,   type: 'subscription', perAgent: false, extraSearches: 25 },
+  { key: 'addon.searches.50',    name: '+50 searches/day', description: '50 extra web searches per day',   usdPrice: 6.99,   type: 'subscription', perAgent: false, extraSearches: 50 },
+  // ── File Manager (per-agent, permanent) ──────────────────────
+  { key: 'addon.file_manager',   name: 'File Manager',   description: 'Browse, edit & download workspace files', usdPrice: 4.99, type: 'one_time', perAgent: true },
+  // ── Full Logs (per-agent) ────────────────────────────────────
+  //    Logs are written per container → this unlock is naturally
+  //    scoped to one agent, not the whole account.
+  { key: 'addon.full_logs',      name: 'Full Logs',      description: 'Unlock full log viewer for this agent',   usdPrice: 2.99,   type: 'subscription', perAgent: true },
+  // ── Extra plugins+skills (per-agent, stackable) ──────────────
+  //    Plugin limit is enforced per-agent in PLUGIN_LIMITS, so a
+  //    stackable +10 slots naturally applies to the agent you pay
+  //    for. Price bumped to reflect per-agent scope and what
+  //    competitors charge for comparable capacity.
+  { key: 'addon.extra_plugins',  name: '+10 Plugins',    description: '10 extra plugin+skill slots for this agent', usdPrice: 5.99, type: 'subscription', perAgent: true, extraPlugins: 10 },
 ];
 
 // Helper: get addon config
@@ -165,10 +209,14 @@ export const BYOK_PROVIDERS: Array<{
     description: 'Ultra-fast inference (free tier available)',
     requiresApiKey: true,
     requiresBaseUrl: false,
+    // Note: gpt-oss models (20b/120b) are intentionally NOT listed here.
+    // They emit function-call intent as literal JSON inside message.content
+    // instead of OpenAI-native tool_calls, breaking every agent framework
+    // (OpenClaw / Hermes / ElizaOS / Milady) silently. See AUDIT_REPORT.md
+    // and docs/research/hermes-reference.md §3 for the full post-mortem.
+    // Llama 4 Scout is the default across the platform.
     models: [
-      { id: 'openai/gpt-oss-20b', name: 'GPT OSS 20B (Recommended)', context: '128K' },
-      { id: 'openai/gpt-oss-120b', name: 'GPT OSS 120B', context: '128K' },
-      { id: 'meta-llama/llama-4-scout-17b-16e-instruct', name: 'Llama 4 Scout 17B', context: '128K' },
+      { id: 'meta-llama/llama-4-scout-17b-16e-instruct', name: 'Llama 4 Scout 17B (Recommended)', context: '128K' },
       { id: 'meta-llama/llama-4-maverick-17b-128e-instruct', name: 'Llama 4 Maverick 17B', context: '128K' },
       { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', context: '128K' },
       { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B Instant', context: '128K' },
