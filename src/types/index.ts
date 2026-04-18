@@ -515,6 +515,39 @@ export interface AdminStats {
   totalPayments: number;
 }
 
+export type PaymentStatus = 'pending' | 'confirmed' | 'failed' | 'refunded';
+
+export type PaymentRail = 'sol' | 'usdc' | 'hatch' | 'stripe' | 'credits';
+
+export interface AdminOverviewExtras {
+  revenueByRail: Record<PaymentRail, { usd: number; txs: number }>;
+  foundingSlots: {
+    taken: number;
+    max: number;
+    remaining: number;
+  };
+  containerTopN: Array<{
+    agentId: string;
+    agentName: string;
+    framework: string;
+    cpuPercent: number;
+    memoryUsageMb: number;
+    memoryLimitMb: number;
+  }>;
+  activePayingUsers: number;
+  expiringSoon: Array<{
+    userId: string;
+    email: string;
+    featureKey: string;
+    expiresAt: string;
+  }>;
+  revenueNewVsRenewal30d: {
+    newUsd: number;
+    renewalUsd: number;
+  };
+  generatedAt: string;
+}
+
 // --- WebSocket Chat ---
 
 export interface WsChatMessage {
