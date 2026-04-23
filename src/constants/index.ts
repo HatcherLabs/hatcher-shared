@@ -3,12 +3,15 @@
 // ============================================================
 
 import type { AgentFramework, AgentStatus, UserTierKey, AddonKey } from '../types/index.js';
+import { TIER_KEYS, ADDON_KEYS, FRAMEWORK_KEYS, AGENT_STATUS_KEYS } from '../i18n/keys.js';
 
 // --- Subscription Tiers ---
 
 export interface TierConfig {
   key: UserTierKey;
   name: string;
+  /** Stable i18n key — frontend resolves via t(`${translationKey}.name`) / t(`${translationKey}.description`) */
+  translationKey: string;
   usdPrice: number;       // 0 = free
   includedAgents: number;
   messagesPerDay: number;  // 0 = unlimited
@@ -28,6 +31,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
   free: {
     key: 'free',
     name: 'Free',
+    translationKey: TIER_KEYS.free,
     usdPrice: 0,
     includedAgents: 1,
     messagesPerDay: 20,     // shared across all agents in the account
@@ -45,6 +49,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
   starter: {
     key: 'starter',
     name: 'Starter',
+    translationKey: TIER_KEYS.starter,
     usdPrice: 6.99,
     includedAgents: 1,
     messagesPerDay: 50,     // BYOK = unlimited
@@ -62,6 +67,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
   pro: {
     key: 'pro',
     name: 'Pro',
+    translationKey: TIER_KEYS.pro,
     usdPrice: 19.99,
     includedAgents: 3,
     messagesPerDay: 100,    // BYOK = unlimited
@@ -79,6 +85,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
   business: {
     key: 'business',
     name: 'Business',
+    translationKey: TIER_KEYS.business,
     usdPrice: 49.99,
     includedAgents: 10,
     messagesPerDay: 300,    // BYOK = unlimited
@@ -96,6 +103,7 @@ export const TIERS: Record<UserTierKey, TierConfig> = {
   founding_member: {
     key: 'founding_member',
     name: 'Founding Member',
+    translationKey: TIER_KEYS.founding_member,
     usdPrice: 99,
     includedAgents: 10,      // was 25 — capped like Business
     messagesPerDay: 300,     // same as Business (not unlimited)
@@ -133,6 +141,8 @@ export interface AddonConfig {
   key: AddonKey;
   name: string;
   description: string;
+  /** Stable i18n key — frontend resolves via t(`${translationKey}.name`) / t(`${translationKey}.description`) */
+  translationKey: string;
   usdPrice: number;
   type: 'subscription' | 'one_time';
   /** true = one purchase per agent; false = account-level (stackable). */
@@ -149,32 +159,32 @@ export interface AddonConfig {
 
 export const ADDONS: AddonConfig[] = [
   // ── Agent capacity (account-level, stackable) ────────────────
-  { key: 'addon.agents.1',       name: '+1 Agent',       description: '1 additional agent slot',           usdPrice: 2.99,   type: 'subscription', perAgent: false, extraAgents: 1 },
-  { key: 'addon.agents.3',       name: '+3 Agents',      description: '3 additional agent slots',          usdPrice: 6.99,   type: 'subscription', perAgent: false, extraAgents: 3 },
-  { key: 'addon.agents.5',       name: '+5 Agents',      description: '5 additional agent slots',          usdPrice: 11.99,  type: 'subscription', perAgent: false, extraAgents: 5 },
-  { key: 'addon.agents.10',      name: '+10 Agents',     description: '10 additional agent slots',         usdPrice: 19.99,  type: 'subscription', perAgent: false, extraAgents: 10 },
+  { key: 'addon.agents.1',       name: '+1 Agent',         description: '1 additional agent slot',                   translationKey: ADDON_KEYS['addon.agents.1'],       usdPrice: 2.99,   type: 'subscription', perAgent: false, extraAgents: 1 },
+  { key: 'addon.agents.3',       name: '+3 Agents',        description: '3 additional agent slots',                  translationKey: ADDON_KEYS['addon.agents.3'],       usdPrice: 6.99,   type: 'subscription', perAgent: false, extraAgents: 3 },
+  { key: 'addon.agents.5',       name: '+5 Agents',        description: '5 additional agent slots',                  translationKey: ADDON_KEYS['addon.agents.5'],       usdPrice: 11.99,  type: 'subscription', perAgent: false, extraAgents: 5 },
+  { key: 'addon.agents.10',      name: '+10 Agents',       description: '10 additional agent slots',                 translationKey: ADDON_KEYS['addon.agents.10'],      usdPrice: 19.99,  type: 'subscription', perAgent: false, extraAgents: 10 },
   // ── Always On (per-agent) ────────────────────────────────────
-  { key: 'addon.always_on',      name: 'Always On',      description: 'Keep this agent running 24/7',      usdPrice: 7.99,   type: 'subscription', perAgent: true },
+  { key: 'addon.always_on',      name: 'Always On',        description: 'Keep this agent running 24/7',              translationKey: ADDON_KEYS['addon.always_on'],      usdPrice: 7.99,   type: 'subscription', perAgent: true },
   // ── Extra messages (account-level, stackable) ────────────────
-  { key: 'addon.messages.20',    name: '+20 msg/day',    description: '20 extra messages per day',         usdPrice: 1.99,   type: 'subscription', perAgent: false, extraMessages: 20 },
-  { key: 'addon.messages.50',    name: '+50 msg/day',    description: '50 extra messages per day',         usdPrice: 3.99,   type: 'subscription', perAgent: false, extraMessages: 50 },
-  { key: 'addon.messages.100',   name: '+100 msg/day',   description: '100 extra messages per day',        usdPrice: 5.99,   type: 'subscription', perAgent: false, extraMessages: 100 },
-  { key: 'addon.messages.200',   name: '+200 msg/day',   description: '200 extra messages per day',        usdPrice: 9.99,   type: 'subscription', perAgent: false, extraMessages: 200 },
+  { key: 'addon.messages.20',    name: '+20 msg/day',      description: '20 extra messages per day',                 translationKey: ADDON_KEYS['addon.messages.20'],    usdPrice: 1.99,   type: 'subscription', perAgent: false, extraMessages: 20 },
+  { key: 'addon.messages.50',    name: '+50 msg/day',      description: '50 extra messages per day',                 translationKey: ADDON_KEYS['addon.messages.50'],    usdPrice: 3.99,   type: 'subscription', perAgent: false, extraMessages: 50 },
+  { key: 'addon.messages.100',   name: '+100 msg/day',     description: '100 extra messages per day',                translationKey: ADDON_KEYS['addon.messages.100'],   usdPrice: 5.99,   type: 'subscription', perAgent: false, extraMessages: 100 },
+  { key: 'addon.messages.200',   name: '+200 msg/day',     description: '200 extra messages per day',                translationKey: ADDON_KEYS['addon.messages.200'],   usdPrice: 9.99,   type: 'subscription', perAgent: false, extraMessages: 200 },
   // ── Extra searches (account-level, stackable) ────────────────
-  { key: 'addon.searches.25',    name: '+25 searches/day', description: '25 extra web searches per day',   usdPrice: 3.99,   type: 'subscription', perAgent: false, extraSearches: 25 },
-  { key: 'addon.searches.50',    name: '+50 searches/day', description: '50 extra web searches per day',   usdPrice: 6.99,   type: 'subscription', perAgent: false, extraSearches: 50 },
+  { key: 'addon.searches.25',    name: '+25 searches/day', description: '25 extra web searches per day',             translationKey: ADDON_KEYS['addon.searches.25'],    usdPrice: 3.99,   type: 'subscription', perAgent: false, extraSearches: 25 },
+  { key: 'addon.searches.50',    name: '+50 searches/day', description: '50 extra web searches per day',             translationKey: ADDON_KEYS['addon.searches.50'],    usdPrice: 6.99,   type: 'subscription', perAgent: false, extraSearches: 50 },
   // ── File Manager (per-agent, permanent) ──────────────────────
-  { key: 'addon.file_manager',   name: 'File Manager',   description: 'Browse, edit & download workspace files', usdPrice: 4.99, type: 'one_time', perAgent: true },
+  { key: 'addon.file_manager',   name: 'File Manager',     description: 'Browse, edit & download workspace files',   translationKey: ADDON_KEYS['addon.file_manager'],   usdPrice: 4.99,   type: 'one_time',     perAgent: true },
   // ── Full Logs (per-agent) ────────────────────────────────────
   //    Logs are written per container → this unlock is naturally
   //    scoped to one agent, not the whole account.
-  { key: 'addon.full_logs',      name: 'Full Logs',      description: 'Unlock full log viewer for this agent',   usdPrice: 2.99,   type: 'subscription', perAgent: true },
+  { key: 'addon.full_logs',      name: 'Full Logs',        description: 'Unlock full log viewer for this agent',     translationKey: ADDON_KEYS['addon.full_logs'],      usdPrice: 2.99,   type: 'subscription', perAgent: true },
   // ── Extra plugins+skills (per-agent, stackable) ──────────────
   //    Plugin limit is enforced per-agent in PLUGIN_LIMITS, so a
   //    stackable +10 slots naturally applies to the agent you pay
   //    for. Price bumped to reflect per-agent scope and what
   //    competitors charge for comparable capacity.
-  { key: 'addon.extra_plugins',  name: '+10 Plugins',    description: '10 extra plugin+skill slots for this agent', usdPrice: 5.99, type: 'subscription', perAgent: true, extraPlugins: 10 },
+  { key: 'addon.extra_plugins',  name: '+10 Plugins',      description: '10 extra plugin+skill slots for this agent', translationKey: ADDON_KEYS['addon.extra_plugins'],  usdPrice: 5.99,   type: 'subscription', perAgent: true, extraPlugins: 10 },
 ];
 
 // Helper: get addon config
@@ -303,6 +313,8 @@ export interface FrameworkMeta {
   key: AgentFramework;
   name: string;
   description: string;
+  /** Stable i18n key — frontend resolves via t(`${translationKey}.name`) / t(`${translationKey}.description`) */
+  translationKey: string;
   dockerImage: string;
   features: string[];
   complexity: 'beginner' | 'intermediate' | 'advanced';
@@ -318,6 +330,7 @@ export const FRAMEWORKS: Record<AgentFramework, FrameworkMeta> = {
     key: 'openclaw',
     name: 'OpenClaw',
     description: 'Self-hosted AI assistant with 3,200+ community skills, multi-channel messaging gateway, and autonomous task execution.',
+    translationKey: FRAMEWORK_KEYS.openclaw,
     complexity: 'advanced',
     bestFor: 'Autonomous agents, task automation, multi-channel messaging',
     dockerImage: 'hatcher/openclaw:latest',
@@ -331,6 +344,7 @@ export const FRAMEWORKS: Record<AgentFramework, FrameworkMeta> = {
     key: 'hermes',
     name: 'Hermes Agent',
     description: 'Autonomous AI agent by Nous Research with persistent memory, 40+ tools, skills system, and multi-platform messaging gateway.',
+    translationKey: FRAMEWORK_KEYS.hermes,
     complexity: 'intermediate',
     bestFor: 'Learning agents, persistent memory, research, multi-provider LLM support',
 
@@ -345,6 +359,7 @@ export const FRAMEWORKS: Record<AgentFramework, FrameworkMeta> = {
     key: 'elizaos',
     name: 'ElizaOS',
     description: 'Open-source AI agent framework with character-driven personas, plugin ecosystem, and multi-client support for social and messaging platforms.',
+    translationKey: FRAMEWORK_KEYS.elizaos,
     complexity: 'intermediate',
     bestFor: 'Character-driven agents, social media bots, community engagement',
     dockerImage: 'hatcher/elizaos:latest',
@@ -358,6 +373,7 @@ export const FRAMEWORKS: Record<AgentFramework, FrameworkMeta> = {
     key: 'milady',
     name: 'Milady',
     description: 'Lightweight, personality-first AI agent framework designed for expressive, culturally-aware conversational agents with modular capabilities.',
+    translationKey: FRAMEWORK_KEYS.milady,
     complexity: 'beginner',
     bestFor: 'Personality-driven bots, community engagement, lightweight deployment',
     dockerImage: 'hatcher/milady:latest',
@@ -393,12 +409,12 @@ export const PRICING = {
 
 export const AGENT_STATUSES = ['active', 'sleeping', 'paused', 'error', 'killed', 'restarting', 'stopping'] as const;
 
-export const AGENT_STATUS_CONFIG: Record<AgentStatus, { label: string; color: string; pulse: boolean }> = {
-  active:     { label: 'Active',     color: 'bg-green-400',  pulse: true },
-  sleeping:   { label: 'Sleeping',   color: 'bg-blue-400',   pulse: false },
-  paused:     { label: 'Paused',     color: 'bg-red-400',    pulse: false },
-  killed:     { label: 'Killed',     color: 'bg-gray-500',   pulse: false },
-  error:      { label: 'Error',      color: 'bg-red-500',    pulse: false },
-  restarting: { label: 'Restarting', color: 'bg-cyan-400',   pulse: true },
-  stopping:   { label: 'Stopping',   color: 'bg-yellow-400', pulse: true },
+export const AGENT_STATUS_CONFIG: Record<AgentStatus, { label: string; translationKey: string; color: string; pulse: boolean }> = {
+  active:     { label: 'Active',     translationKey: AGENT_STATUS_KEYS.active,     color: 'bg-green-400',  pulse: true },
+  sleeping:   { label: 'Sleeping',   translationKey: AGENT_STATUS_KEYS.sleeping,   color: 'bg-blue-400',   pulse: false },
+  paused:     { label: 'Paused',     translationKey: AGENT_STATUS_KEYS.paused,     color: 'bg-red-400',    pulse: false },
+  killed:     { label: 'Killed',     translationKey: AGENT_STATUS_KEYS.killed,     color: 'bg-gray-500',   pulse: false },
+  error:      { label: 'Error',      translationKey: AGENT_STATUS_KEYS.error,      color: 'bg-red-500',    pulse: false },
+  restarting: { label: 'Restarting', translationKey: AGENT_STATUS_KEYS.restarting, color: 'bg-cyan-400',   pulse: true },
+  stopping:   { label: 'Stopping',   translationKey: AGENT_STATUS_KEYS.stopping,   color: 'bg-yellow-400', pulse: true },
 };

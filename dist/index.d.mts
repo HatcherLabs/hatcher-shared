@@ -507,6 +507,8 @@ interface PluginLimits {
 interface TierConfig {
     key: UserTierKey;
     name: string;
+    /** Stable i18n key — frontend resolves via t(`${translationKey}.name`) / t(`${translationKey}.description`) */
+    translationKey: string;
     usdPrice: number;
     includedAgents: number;
     messagesPerDay: number;
@@ -533,6 +535,8 @@ interface AddonConfig {
     key: AddonKey;
     name: string;
     description: string;
+    /** Stable i18n key — frontend resolves via t(`${translationKey}.name`) / t(`${translationKey}.description`) */
+    translationKey: string;
     usdPrice: number;
     type: 'subscription' | 'one_time';
     /** true = one purchase per agent; false = account-level (stackable). */
@@ -568,6 +572,8 @@ interface FrameworkMeta {
     key: AgentFramework;
     name: string;
     description: string;
+    /** Stable i18n key — frontend resolves via t(`${translationKey}.name`) / t(`${translationKey}.description`) */
+    translationKey: string;
     dockerImage: string;
     features: string[];
     complexity: 'beginner' | 'intermediate' | 'advanced';
@@ -603,8 +609,46 @@ declare const PRICING: {
 declare const AGENT_STATUSES: readonly ["active", "sleeping", "paused", "error", "killed", "restarting", "stopping"];
 declare const AGENT_STATUS_CONFIG: Record<AgentStatus, {
     label: string;
+    translationKey: string;
     color: string;
     pulse: boolean;
 }>;
 
-export { ADDONS, AGENT_STATUSES, AGENT_STATUS_CONFIG, type AddonConfig, type AddonKey, type AdminOverviewExtras, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentPluginRecord, type AgentStatus, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FOUNDING_MEMBER_MAX_SLOTS, FRAMEWORKS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type MiladyConfig, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PLUGIN_LIMITS, PRICING, type Payment, type PaymentRail, type PaymentStatus, type PluginLimits, type PluginRegistryEntry, type PluginSource, type PluginStatus, type PluginType, type Referral, SOLANA_CONFIG, type SupportTicket, TIERS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
+/**
+ * Stable translation keys for user-facing strings in the shared package.
+ * Frontend uses these to look up translations in messages/*.json under the
+ * `shared.*` namespace. Backend ignores these and returns the English fallback
+ * from the `name`/`description` fields on the constants.
+ */
+declare const TIER_KEYS: {
+    readonly free: "shared.tiers.free";
+    readonly starter: "shared.tiers.starter";
+    readonly pro: "shared.tiers.pro";
+    readonly business: "shared.tiers.business";
+    readonly founding_member: "shared.tiers.founding_member";
+};
+type TierTranslationKey = (typeof TIER_KEYS)[keyof typeof TIER_KEYS];
+/**
+ * Addon keys — keyed by the AddonKey string used in ADDONS constant.
+ * Translation path: `shared.addons.<mapped_key>.{name,description}`.
+ */
+declare const ADDON_KEYS: Record<string, string>;
+declare const FRAMEWORK_KEYS: {
+    readonly openclaw: "shared.frameworks.openclaw";
+    readonly hermes: "shared.frameworks.hermes";
+    readonly elizaos: "shared.frameworks.elizaos";
+    readonly milady: "shared.frameworks.milady";
+};
+type FrameworkTranslationKey = (typeof FRAMEWORK_KEYS)[keyof typeof FRAMEWORK_KEYS];
+declare const AGENT_STATUS_KEYS: {
+    readonly active: "shared.agentStatus.active";
+    readonly sleeping: "shared.agentStatus.sleeping";
+    readonly paused: "shared.agentStatus.paused";
+    readonly error: "shared.agentStatus.error";
+    readonly killed: "shared.agentStatus.killed";
+    readonly restarting: "shared.agentStatus.restarting";
+    readonly stopping: "shared.agentStatus.stopping";
+};
+type AgentStatusTranslationKey = (typeof AGENT_STATUS_KEYS)[keyof typeof AGENT_STATUS_KEYS];
+
+export { ADDONS, ADDON_KEYS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_STATUS_KEYS, type AddonConfig, type AddonKey, type AdminOverviewExtras, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentPluginRecord, type AgentStatus, type AgentStatusTranslationKey, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FOUNDING_MEMBER_MAX_SLOTS, FRAMEWORKS, FRAMEWORK_KEYS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type FrameworkTranslationKey, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type MiladyConfig, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PLUGIN_LIMITS, PRICING, type Payment, type PaymentRail, type PaymentStatus, type PluginLimits, type PluginRegistryEntry, type PluginSource, type PluginStatus, type PluginType, type Referral, SOLANA_CONFIG, type SupportTicket, TIERS, TIER_KEYS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type TierTranslationKey, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
