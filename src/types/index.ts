@@ -269,8 +269,30 @@ export interface Agent {
   containerToken: string | null;
   config: AgentConfig;
   teamId: string | null;
+  // SKALE Phase 1+ — public-safe agent on-chain identity. The encrypted
+  // private key (skaleWalletEncrypted) is server-only and never leaves
+  // the API. erc8004AgentId is populated only after Phase 2 registration
+  // succeeds; null on legacy / not-yet-registered agents.
+  skaleWalletAddress?: string | null;
+  skaleAgentId?: string | null;
+  skaleRegisteredAt?: Date | string | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+/** Wallet status payload returned by GET /agents/:id/skale-wallet. */
+export interface SkaleWalletInfo {
+  address: string;
+  chainId: number;
+  rpcUrl: string;
+  ethWei: string;
+  ethFormatted: string;
+  usdcRaw: string;
+  usdcFormatted: string;
+  usdcContract: string;
+  erc8004AgentId: string | null;
+  erc8004RegisteredAt: Date | string | null;
+  erc8004IdentityContract: string;
 }
 
 // --- Subscription Tiers ---
