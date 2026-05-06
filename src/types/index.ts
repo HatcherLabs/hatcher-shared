@@ -32,7 +32,7 @@ export interface User {
 // --- Agent ---
 
 export type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting' | 'stopping';
-export type AgentFramework = 'openclaw' | 'hermes' | 'elizaos' | 'milady';
+export type AgentFramework = 'openclaw' | 'hermes' | 'custom';
 export type Framework = AgentFramework;
 
 // ── OpenClaw Native Config Types (matches real openclaw.json) ──
@@ -225,34 +225,12 @@ export interface HermesConfig {
   }>>;
 }
 
-// --- Milady Config ---
-
-export interface MiladyConfig {
-  name: string;
-  model?: string;
-  provider?: string;
-  systemPrompt?: string;
-  persona?: {
-    name?: string;
-    description?: string;
-    traits?: string[];
-    voice?: string;
-  };
-  modules?: string[];
-  channels?: Partial<Record<'telegram' | 'discord' | 'twitter', {
-    enabled: boolean;
-    token?: string;
-    [key: string]: unknown;
-  }>>;
-}
-
 // --- Agent Config (discriminated union for all frameworks) ---
 
 export type AgentConfig =
   | { framework: 'openclaw'; config: OpenClawConfig }
   | { framework: 'hermes'; config: HermesConfig }
-  | { framework: 'elizaos'; config: Record<string, unknown> }
-  | { framework: 'milady'; config: MiladyConfig };
+  | { framework: 'custom'; config: Record<string, unknown> };
 
 export interface Agent {
   id: string;
@@ -269,8 +247,30 @@ export interface Agent {
   containerToken: string | null;
   config: AgentConfig;
   teamId: string | null;
+  // SKALE Phase 1+ — public-safe agent on-chain identity. The encrypted
+  // private key (skaleWalletEncrypted) is server-only and never leaves
+  // the API. erc8004AgentId is populated only after Phase 2 registration
+  // succeeds; null on legacy / not-yet-registered agents.
+  skaleWalletAddress?: string | null;
+  skaleAgentId?: string | null;
+  skaleRegisteredAt?: Date | string | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+/** Wallet status payload returned by GET /agents/:id/skale-wallet. */
+export interface SkaleWalletInfo {
+  address: string;
+  chainId: number;
+  rpcUrl: string;
+  ethWei: string;
+  ethFormatted: string;
+  usdcRaw: string;
+  usdcFormatted: string;
+  usdcContract: string;
+  erc8004AgentId: string | null;
+  erc8004RegisteredAt: Date | string | null;
+  erc8004IdentityContract: string;
 }
 
 // --- Subscription Tiers ---
@@ -567,8 +567,6 @@ export type PluginType = 'skill' | 'plugin';
 export type PluginSource =
   | 'clawhub'          // OpenClaw/Hermes skills from ClawHub
   | 'clawhub-plugin'   // OpenClaw code plugins from ClawHub
-  | 'elizaos-registry' // ElizaOS npm plugins
-  | 'milady-skills'    // Milady skills from milady-ai/skills
   | 'github'           // Hermes Python plugins from GitHub repos
   | 'npm';             // OpenClaw plugins from npm registry
 

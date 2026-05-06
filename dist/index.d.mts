@@ -20,7 +20,7 @@ interface User {
     createdAt: Date;
 }
 type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting' | 'stopping';
-type AgentFramework = 'openclaw' | 'hermes' | 'elizaos' | 'milady';
+type AgentFramework = 'openclaw' | 'hermes' | 'custom';
 type Framework = AgentFramework;
 /** All valid OpenClaw channel identifiers */
 type OpenClawChannelName = 'telegram' | 'discord' | 'whatsapp' | 'slack' | 'signal' | 'irc' | 'googlechat' | 'msteams' | 'mattermost' | 'line' | 'matrix' | 'nostr' | 'twitch' | 'feishu' | 'nextcloud-talk' | 'synology-chat' | 'tlon' | 'zalo' | 'bluebubbles';
@@ -213,24 +213,6 @@ interface HermesConfig {
         [key: string]: unknown;
     }>>;
 }
-interface MiladyConfig {
-    name: string;
-    model?: string;
-    provider?: string;
-    systemPrompt?: string;
-    persona?: {
-        name?: string;
-        description?: string;
-        traits?: string[];
-        voice?: string;
-    };
-    modules?: string[];
-    channels?: Partial<Record<'telegram' | 'discord' | 'twitter', {
-        enabled: boolean;
-        token?: string;
-        [key: string]: unknown;
-    }>>;
-}
 type AgentConfig = {
     framework: 'openclaw';
     config: OpenClawConfig;
@@ -238,11 +220,8 @@ type AgentConfig = {
     framework: 'hermes';
     config: HermesConfig;
 } | {
-    framework: 'elizaos';
+    framework: 'custom';
     config: Record<string, unknown>;
-} | {
-    framework: 'milady';
-    config: MiladyConfig;
 };
 interface Agent {
     id: string;
@@ -259,8 +238,25 @@ interface Agent {
     containerToken: string | null;
     config: AgentConfig;
     teamId: string | null;
+    skaleWalletAddress?: string | null;
+    skaleAgentId?: string | null;
+    skaleRegisteredAt?: Date | string | null;
     createdAt: Date;
     updatedAt: Date;
+}
+/** Wallet status payload returned by GET /agents/:id/skale-wallet. */
+interface SkaleWalletInfo {
+    address: string;
+    chainId: number;
+    rpcUrl: string;
+    ethWei: string;
+    ethFormatted: string;
+    usdcRaw: string;
+    usdcFormatted: string;
+    usdcContract: string;
+    erc8004AgentId: string | null;
+    erc8004RegisteredAt: Date | string | null;
+    erc8004IdentityContract: string;
 }
 type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
 type AddonKey = 'addon.agents.1' | 'addon.agents.3' | 'addon.agents.5' | 'addon.agents.10' | 'addon.always_on' | 'addon.messages.20' | 'addon.messages.50' | 'addon.messages.100' | 'addon.messages.200' | 'addon.searches.25' | 'addon.searches.50' | 'addon.file_manager' | 'addon.full_logs' | 'addon.extra_plugins';
@@ -476,7 +472,7 @@ interface WsChatPayload {
     history?: WsChatMessage[];
 }
 type PluginType = 'skill' | 'plugin';
-type PluginSource = 'clawhub' | 'clawhub-plugin' | 'elizaos-registry' | 'milady-skills' | 'github' | 'npm';
+type PluginSource = 'clawhub' | 'clawhub-plugin' | 'github' | 'npm';
 type PluginStatus = 'pending' | 'installed' | 'failed' | 'uninstalled';
 interface AgentPluginRecord {
     id: string;
@@ -636,8 +632,7 @@ declare const ADDON_KEYS: Record<string, string>;
 declare const FRAMEWORK_KEYS: {
     readonly openclaw: "shared.frameworks.openclaw";
     readonly hermes: "shared.frameworks.hermes";
-    readonly elizaos: "shared.frameworks.elizaos";
-    readonly milady: "shared.frameworks.milady";
+    readonly custom: "shared.frameworks.custom";
 };
 type FrameworkTranslationKey = (typeof FRAMEWORK_KEYS)[keyof typeof FRAMEWORK_KEYS];
 declare const AGENT_STATUS_KEYS: {
@@ -651,4 +646,4 @@ declare const AGENT_STATUS_KEYS: {
 };
 type AgentStatusTranslationKey = (typeof AGENT_STATUS_KEYS)[keyof typeof AGENT_STATUS_KEYS];
 
-export { ADDONS, ADDON_KEYS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_STATUS_KEYS, type AddonConfig, type AddonKey, type AdminOverviewExtras, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentPluginRecord, type AgentStatus, type AgentStatusTranslationKey, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FOUNDING_MEMBER_MAX_SLOTS, FRAMEWORKS, FRAMEWORK_KEYS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type FrameworkTranslationKey, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type MiladyConfig, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PLUGIN_LIMITS, PRICING, type Payment, type PaymentRail, type PaymentStatus, type PluginLimits, type PluginRegistryEntry, type PluginSource, type PluginStatus, type PluginType, type Referral, SOLANA_CONFIG, type SupportTicket, TIERS, TIER_KEYS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type TierTranslationKey, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
+export { ADDONS, ADDON_KEYS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_STATUS_KEYS, type AddonConfig, type AddonKey, type AdminOverviewExtras, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentPluginRecord, type AgentStatus, type AgentStatusTranslationKey, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FOUNDING_MEMBER_MAX_SLOTS, FRAMEWORKS, FRAMEWORK_KEYS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type FrameworkTranslationKey, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PLUGIN_LIMITS, PRICING, type Payment, type PaymentRail, type PaymentStatus, type PluginLimits, type PluginRegistryEntry, type PluginSource, type PluginStatus, type PluginType, type Referral, SOLANA_CONFIG, type SkaleWalletInfo, type SupportTicket, TIERS, TIER_KEYS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type TierTranslationKey, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };

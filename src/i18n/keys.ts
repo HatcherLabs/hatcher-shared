@@ -39,8 +39,7 @@ export const ADDON_KEYS: Record<string, string> = {
 export const FRAMEWORK_KEYS = {
   openclaw: 'shared.frameworks.openclaw',
   hermes:   'shared.frameworks.hermes',
-  elizaos:  'shared.frameworks.elizaos',
-  milady:   'shared.frameworks.milady',
+  custom:   'shared.frameworks.custom',
 } as const;
 
 export type FrameworkTranslationKey = (typeof FRAMEWORK_KEYS)[keyof typeof FRAMEWORK_KEYS];
