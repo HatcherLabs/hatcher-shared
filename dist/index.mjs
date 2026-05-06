@@ -41,8 +41,7 @@ var ADDON_KEYS = {
 var FRAMEWORK_KEYS = {
   openclaw: "shared.frameworks.openclaw",
   hermes: "shared.frameworks.hermes",
-  elizaos: "shared.frameworks.elizaos",
-  milady: "shared.frameworks.milady"
+  custom: "shared.frameworks.custom"
 };
 var AGENT_STATUS_KEYS = {
   active: "shared.agentStatus.active",
@@ -224,7 +223,7 @@ var BYOK_PROVIDERS = [
     // Note: gpt-oss models (20b/120b) are intentionally NOT listed here.
     // They emit function-call intent as literal JSON inside message.content
     // instead of OpenAI-native tool_calls, breaking every agent framework
-    // (OpenClaw / Hermes / ElizaOS / Milady) silently. See AUDIT_REPORT.md
+    // (OpenClaw / Hermes) silently. See AUDIT_REPORT.md
     // and docs/research/hermes-reference.md §3 for the full post-mortem.
     // Llama 4 Scout is the default across the platform.
     models: [
@@ -335,33 +334,19 @@ var FRAMEWORKS = {
     features: ["Persistent memory & learning", "40+ built-in tools", "Skills system", "Multi-provider LLM support"],
     docsUrl: "https://hermes-agent.nousresearch.com"
   },
-  elizaos: {
-    key: "elizaos",
-    name: "ElizaOS",
-    description: "Open-source AI agent framework with character-driven personas, plugin ecosystem, and multi-client support for social and messaging platforms.",
-    translationKey: FRAMEWORK_KEYS.elizaos,
-    complexity: "intermediate",
-    bestFor: "Character-driven agents, social media bots, community engagement",
-    dockerImage: "hatcher/elizaos:latest",
+  custom: {
+    key: "custom",
+    name: "Custom Docker",
+    description: "User-supplied Docker image for advanced agent runtimes.",
+    translationKey: FRAMEWORK_KEYS.custom,
+    complexity: "advanced",
+    bestFor: "Advanced teams bringing their own runtime image",
+    dockerImage: "custom",
     port: 3e3,
     healthEndpoint: "/health",
-    chatEndpoint: "/api/chat",
-    features: ["Character personas", "Plugin ecosystem", "Multi-client support", "Social media integration"],
-    docsUrl: "https://elizaos.github.io/eliza/"
-  },
-  milady: {
-    key: "milady",
-    name: "Milady",
-    description: "Lightweight, personality-first AI agent framework designed for expressive, culturally-aware conversational agents with modular capabilities.",
-    translationKey: FRAMEWORK_KEYS.milady,
-    complexity: "beginner",
-    bestFor: "Personality-driven bots, community engagement, lightweight deployment",
-    dockerImage: "hatcher/milady:latest",
-    port: 8080,
-    healthEndpoint: "/health",
-    chatEndpoint: "/api/chat",
-    features: ["Personality-first design", "Modular capabilities", "Lightweight footprint", "Cultural awareness"],
-    docsUrl: "https://docs.milady.gg"
+    chatEndpoint: "/chat",
+    features: ["Bring your own Docker image", "Custom runtime contract"],
+    docsUrl: "https://docs.hatcher.host/frameworks"
   }
 };
 var SOLANA_CONFIG = {

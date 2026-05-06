@@ -32,7 +32,7 @@ export interface User {
 // --- Agent ---
 
 export type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting' | 'stopping';
-export type AgentFramework = 'openclaw' | 'hermes' | 'elizaos' | 'milady';
+export type AgentFramework = 'openclaw' | 'hermes' | 'custom';
 export type Framework = AgentFramework;
 
 // ── OpenClaw Native Config Types (matches real openclaw.json) ──
@@ -225,34 +225,12 @@ export interface HermesConfig {
   }>>;
 }
 
-// --- Milady Config ---
-
-export interface MiladyConfig {
-  name: string;
-  model?: string;
-  provider?: string;
-  systemPrompt?: string;
-  persona?: {
-    name?: string;
-    description?: string;
-    traits?: string[];
-    voice?: string;
-  };
-  modules?: string[];
-  channels?: Partial<Record<'telegram' | 'discord' | 'twitter', {
-    enabled: boolean;
-    token?: string;
-    [key: string]: unknown;
-  }>>;
-}
-
 // --- Agent Config (discriminated union for all frameworks) ---
 
 export type AgentConfig =
   | { framework: 'openclaw'; config: OpenClawConfig }
   | { framework: 'hermes'; config: HermesConfig }
-  | { framework: 'elizaos'; config: Record<string, unknown> }
-  | { framework: 'milady'; config: MiladyConfig };
+  | { framework: 'custom'; config: Record<string, unknown> };
 
 export interface Agent {
   id: string;
@@ -589,8 +567,6 @@ export type PluginType = 'skill' | 'plugin';
 export type PluginSource =
   | 'clawhub'          // OpenClaw/Hermes skills from ClawHub
   | 'clawhub-plugin'   // OpenClaw code plugins from ClawHub
-  | 'elizaos-registry' // ElizaOS npm plugins
-  | 'milady-skills'    // Milady skills from milady-ai/skills
   | 'github'           // Hermes Python plugins from GitHub repos
   | 'npm';             // OpenClaw plugins from npm registry
 
