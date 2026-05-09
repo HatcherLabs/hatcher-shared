@@ -47,6 +47,7 @@ var AGENT_STATUS_KEYS = {
   active: "shared.agentStatus.active",
   sleeping: "shared.agentStatus.sleeping",
   paused: "shared.agentStatus.paused",
+  archived: "shared.agentStatus.archived",
   error: "shared.agentStatus.error",
   killed: "shared.agentStatus.killed",
   restarting: "shared.agentStatus.restarting",
@@ -362,11 +363,12 @@ var PRICING = {
   free: { usdPrice: 0, label: "Free", description: "Free baseline \u2014 1 agent, Groq LLM, BYOK always free" },
   paid: { usdPrice: 0, label: "A la carte", type: "one_time", description: "Unlock features individually with tokens" }
 };
-var AGENT_STATUSES = ["active", "sleeping", "paused", "error", "killed", "restarting", "stopping"];
+var AGENT_STATUSES = ["active", "sleeping", "paused", "archived", "error", "killed", "restarting", "stopping"];
 var AGENT_STATUS_CONFIG = {
   active: { label: "Active", translationKey: AGENT_STATUS_KEYS.active, color: "bg-green-400", pulse: true },
   sleeping: { label: "Sleeping", translationKey: AGENT_STATUS_KEYS.sleeping, color: "bg-blue-400", pulse: false },
   paused: { label: "Paused", translationKey: AGENT_STATUS_KEYS.paused, color: "bg-red-400", pulse: false },
+  archived: { label: "Archived", translationKey: AGENT_STATUS_KEYS.archived, color: "bg-zinc-400", pulse: false },
   killed: { label: "Killed", translationKey: AGENT_STATUS_KEYS.killed, color: "bg-gray-500", pulse: false },
   error: { label: "Error", translationKey: AGENT_STATUS_KEYS.error, color: "bg-red-500", pulse: false },
   restarting: { label: "Restarting", translationKey: AGENT_STATUS_KEYS.restarting, color: "bg-cyan-400", pulse: true },

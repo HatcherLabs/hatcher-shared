@@ -19,7 +19,7 @@ interface User {
     isAdmin: boolean;
     createdAt: Date;
 }
-type AgentStatus = 'active' | 'sleeping' | 'paused' | 'killed' | 'error' | 'restarting' | 'stopping';
+type AgentStatus = 'active' | 'sleeping' | 'paused' | 'archived' | 'killed' | 'error' | 'restarting' | 'stopping';
 type AgentFramework = 'openclaw' | 'hermes' | 'custom';
 type Framework = AgentFramework;
 /** All valid OpenClaw channel identifiers */
@@ -236,6 +236,9 @@ interface Agent {
     messageCount: number;
     containerId: string | null;
     containerToken: string | null;
+    inactiveSince?: Date | string | null;
+    archivedAt?: Date | string | null;
+    archiveDeleteAfter?: Date | string | null;
     config: AgentConfig;
     teamId: string | null;
     skaleWalletAddress?: string | null;
@@ -602,7 +605,7 @@ declare const PRICING: {
         description: string;
     };
 };
-declare const AGENT_STATUSES: readonly ["active", "sleeping", "paused", "error", "killed", "restarting", "stopping"];
+declare const AGENT_STATUSES: readonly ["active", "sleeping", "paused", "archived", "error", "killed", "restarting", "stopping"];
 declare const AGENT_STATUS_CONFIG: Record<AgentStatus, {
     label: string;
     translationKey: string;
@@ -639,6 +642,7 @@ declare const AGENT_STATUS_KEYS: {
     readonly active: "shared.agentStatus.active";
     readonly sleeping: "shared.agentStatus.sleeping";
     readonly paused: "shared.agentStatus.paused";
+    readonly archived: "shared.agentStatus.archived";
     readonly error: "shared.agentStatus.error";
     readonly killed: "shared.agentStatus.killed";
     readonly restarting: "shared.agentStatus.restarting";
