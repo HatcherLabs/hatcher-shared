@@ -393,12 +393,13 @@ export const PRICING = {
 
 // --- Agent Statuses ---
 
-export const AGENT_STATUSES = ['active', 'sleeping', 'paused', 'error', 'killed', 'restarting', 'stopping'] as const;
+export const AGENT_STATUSES = ['active', 'sleeping', 'paused', 'archived', 'error', 'killed', 'restarting', 'stopping'] as const;
 
 export const AGENT_STATUS_CONFIG: Record<AgentStatus, { label: string; translationKey: string; color: string; pulse: boolean }> = {
   active:     { label: 'Active',     translationKey: AGENT_STATUS_KEYS.active,     color: 'bg-green-400',  pulse: true },
   sleeping:   { label: 'Sleeping',   translationKey: AGENT_STATUS_KEYS.sleeping,   color: 'bg-blue-400',   pulse: false },
   paused:     { label: 'Paused',     translationKey: AGENT_STATUS_KEYS.paused,     color: 'bg-red-400',    pulse: false },
+  archived:   { label: 'Archived',   translationKey: AGENT_STATUS_KEYS.archived,   color: 'bg-zinc-400',   pulse: false },
   killed:     { label: 'Killed',     translationKey: AGENT_STATUS_KEYS.killed,     color: 'bg-gray-500',   pulse: false },
   error:      { label: 'Error',      translationKey: AGENT_STATUS_KEYS.error,      color: 'bg-red-500',    pulse: false },
   restarting: { label: 'Restarting', translationKey: AGENT_STATUS_KEYS.restarting, color: 'bg-cyan-400',   pulse: true },

@@ -48,6 +48,7 @@ export const AGENT_STATUS_KEYS = {
   active:     'shared.agentStatus.active',
   sleeping:   'shared.agentStatus.sleeping',
   paused:     'shared.agentStatus.paused',
+  archived:   'shared.agentStatus.archived',
   error:      'shared.agentStatus.error',
   killed:     'shared.agentStatus.killed',
   restarting: 'shared.agentStatus.restarting',
