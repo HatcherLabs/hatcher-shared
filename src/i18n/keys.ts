@@ -25,15 +25,12 @@ export const ADDON_KEYS: Record<string, string> = {
   'addon.agents.5':       'shared.addons.agents_plus5',
   'addon.agents.10':      'shared.addons.agents_plus10',
   'addon.always_on':      'shared.addons.always_on',
-  'addon.messages.20':    'shared.addons.messages_plus20',
-  'addon.messages.50':    'shared.addons.messages_plus50',
-  'addon.messages.100':   'shared.addons.messages_plus100',
-  'addon.messages.200':   'shared.addons.messages_plus200',
-  'addon.searches.25':    'shared.addons.searches_plus25',
-  'addon.searches.50':    'shared.addons.searches_plus50',
+  'addon.ai_credits.5000':  'shared.addons.ai_credits_5000',
+  'addon.ai_credits.10000': 'shared.addons.ai_credits_10000',
+  'addon.ai_credits.25000': 'shared.addons.ai_credits_25000',
+  'addon.ai_credits.50000': 'shared.addons.ai_credits_50000',
   'addon.file_manager':   'shared.addons.file_manager',
   'addon.full_logs':      'shared.addons.full_logs',
-  'addon.extra_plugins':  'shared.addons.plugins_plus10',
 } as const;
 
 export const FRAMEWORK_KEYS = {
