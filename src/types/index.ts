@@ -24,6 +24,7 @@ export interface User {
   apiKey: string;
   referralCode: string | null;
   hatchCredits: number;
+  aiCreditsBalance?: number;
   tier: UserTierKey;
   isAdmin: boolean;
   createdAt: Date;
@@ -280,21 +281,72 @@ export interface SkaleWalletInfo {
 
 export type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
 
+export type AiCreditSource =
+  | 'monthly_grant'
+  | 'upgrade_grant'
+  | 'referral'
+  | 'admin'
+  | 'migration'
+  | 'purchase_bonus';
+
+export type AiCreditUsageKind =
+  | 'llm'
+  | 'web_search'
+  | 'research'
+  | 'extract'
+  | 'crawl'
+  | 'embedding'
+  | 'other';
+
+export type AiCreditReservationStatus = 'active' | 'finalized' | 'released' | 'expired';
+
+export interface AiCreditBalance {
+  balance: number;
+  monthlyGrant: number;
+  periodStart: string | null;
+  periodEnd: string | null;
+  nextResetAt: string | null;
+}
+
+export interface AiCreditUsage {
+  id: string;
+  userId: string;
+  agentId: string | null;
+  kind: AiCreditUsageKind;
+  provider: string;
+  model: string | null;
+  credits: number;
+  providerCostUsd: number;
+  createdAt: Date | string;
+}
+
+export interface AiModelOption {
+  id: string;
+  name: string;
+  provider: string;
+  contextLength: number | null;
+  inputCostPerMillion: number | null;
+  outputCostPerMillion: number | null;
+  estimatedCreditsPerMillionInput: number | null;
+  estimatedCreditsPerMillionOutput: number | null;
+  category?: string;
+  costTier?: string;
+  recommended?: boolean;
+  warning?: string;
+}
+
 export type AddonKey =
   | 'addon.agents.1'
   | 'addon.agents.3'
   | 'addon.agents.5'
   | 'addon.agents.10'
   | 'addon.always_on'
-  | 'addon.messages.20'
-  | 'addon.messages.50'
-  | 'addon.messages.100'
-  | 'addon.messages.200'
-  | 'addon.searches.25'
-  | 'addon.searches.50'
+  | 'addon.ai_credits.5000'
+  | 'addon.ai_credits.10000'
+  | 'addon.ai_credits.25000'
+  | 'addon.ai_credits.50000'
   | 'addon.file_manager'
-  | 'addon.full_logs'
-  | 'addon.extra_plugins';
+  | 'addon.full_logs';
 
 // FeatureKey is now tier + addon keys (kept for DB backward compat)
 export type FeatureKey = UserTierKey | AddonKey;

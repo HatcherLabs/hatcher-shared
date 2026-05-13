@@ -15,6 +15,7 @@ interface User {
     apiKey: string;
     referralCode: string | null;
     hatchCredits: number;
+    aiCreditsBalance?: number;
     tier: UserTierKey;
     isAdmin: boolean;
     createdAt: Date;
@@ -262,7 +263,42 @@ interface SkaleWalletInfo {
     erc8004IdentityContract: string;
 }
 type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
-type AddonKey = 'addon.agents.1' | 'addon.agents.3' | 'addon.agents.5' | 'addon.agents.10' | 'addon.always_on' | 'addon.messages.20' | 'addon.messages.50' | 'addon.messages.100' | 'addon.messages.200' | 'addon.searches.25' | 'addon.searches.50' | 'addon.file_manager' | 'addon.full_logs' | 'addon.extra_plugins';
+type AiCreditSource = 'monthly_grant' | 'upgrade_grant' | 'referral' | 'admin' | 'migration' | 'purchase_bonus';
+type AiCreditUsageKind = 'llm' | 'web_search' | 'research' | 'extract' | 'crawl' | 'embedding' | 'other';
+type AiCreditReservationStatus = 'active' | 'finalized' | 'released' | 'expired';
+interface AiCreditBalance {
+    balance: number;
+    monthlyGrant: number;
+    periodStart: string | null;
+    periodEnd: string | null;
+    nextResetAt: string | null;
+}
+interface AiCreditUsage {
+    id: string;
+    userId: string;
+    agentId: string | null;
+    kind: AiCreditUsageKind;
+    provider: string;
+    model: string | null;
+    credits: number;
+    providerCostUsd: number;
+    createdAt: Date | string;
+}
+interface AiModelOption {
+    id: string;
+    name: string;
+    provider: string;
+    contextLength: number | null;
+    inputCostPerMillion: number | null;
+    outputCostPerMillion: number | null;
+    estimatedCreditsPerMillionInput: number | null;
+    estimatedCreditsPerMillionOutput: number | null;
+    category?: string;
+    costTier?: string;
+    recommended?: boolean;
+    warning?: string;
+}
+type AddonKey = 'addon.agents.1' | 'addon.agents.3' | 'addon.agents.5' | 'addon.agents.10' | 'addon.always_on' | 'addon.ai_credits.5000' | 'addon.ai_credits.10000' | 'addon.ai_credits.25000' | 'addon.ai_credits.50000' | 'addon.file_manager' | 'addon.full_logs';
 type FeatureKey = UserTierKey | AddonKey;
 type FeatureType = 'subscription' | 'one_time';
 interface AgentFeature {
@@ -510,7 +546,11 @@ interface TierConfig {
     translationKey: string;
     usdPrice: number;
     includedAgents: number;
+    /** Monthly AI Credits granted for hosted LLM/search/tool usage. */
+    aiCreditsMonthly: number;
+    /** @deprecated Hosted AI usage is metered by aiCreditsMonthly. Kept for API compatibility. */
     messagesPerDay: number;
+    /** @deprecated Hosted web search is metered by aiCreditsMonthly. Kept for API compatibility. */
     searchesPerDay: number;
     cpuLimit: number;
     memoryMb: number;
@@ -520,8 +560,27 @@ interface TierConfig {
     fileManager: boolean;
     fullLogs: boolean;
     prioritySupport: boolean;
-    maxPlugins: number;
+    /** null = unlimited plugins + skills. */
+    maxPlugins: number | null;
 }
+declare const AI_CREDIT_UNIT_USD = 0.001;
+declare const AI_CREDIT_DEFAULT_MARGIN_MULTIPLIER = 1;
+declare const AI_CREDIT_MIN_CHARGE = 1;
+declare const TIER_AI_CREDITS_MONTHLY: Record<UserTierKey, number>;
+type HostedModelCategory = 'default' | 'fast' | 'balanced' | 'coding' | 'premium' | 'advanced';
+type HostedModelCostTier = 'free' | 'low' | 'medium' | 'high' | 'premium';
+interface HostedModelRecommendation {
+    id: string;
+    name: string;
+    provider: string;
+    category: HostedModelCategory;
+    costTier: HostedModelCostTier;
+    context?: string;
+    description: string;
+    default?: boolean;
+    warning?: string;
+}
+declare const HATCHER_HOSTED_MODEL_RECOMMENDATIONS: HostedModelRecommendation[];
 declare const TIERS: Record<UserTierKey, TierConfig>;
 declare const TIER_ORDER: UserTierKey[];
 /** Absolute cap on Founding Member slots. Hard-coded here (not in the DB)
@@ -542,16 +601,18 @@ interface AddonConfig {
     perAgent: boolean;
     /** Number of extra agent slots this addon grants. */
     extraAgents?: number;
-    /** Number of extra daily messages this addon grants (account-level). */
+    /** @deprecated legacy daily message quota add-on field. */
     extraMessages?: number;
-    /** Number of extra daily web searches this addon grants (account-level). */
+    /** @deprecated legacy daily web-search quota add-on field. */
     extraSearches?: number;
-    /** Number of extra plugin+skill slots this addon grants. */
+    /** One-time AI Credits granted to the buyer's account. */
+    aiCredits?: number;
+    /** @deprecated Plugin and skill slots are unlimited. */
     extraPlugins?: number;
 }
 declare const ADDONS: AddonConfig[];
 declare function getAddon(key: AddonKey): typeof ADDONS[number] | undefined;
-declare const PLUGIN_LIMITS: Record<UserTierKey, number>;
+declare const PLUGIN_LIMITS: Record<UserTierKey, number | null>;
 declare const BYOK_PROVIDERS: Array<{
     key: BYOKProvider;
     name: string;
@@ -650,4 +711,4 @@ declare const AGENT_STATUS_KEYS: {
 };
 type AgentStatusTranslationKey = (typeof AGENT_STATUS_KEYS)[keyof typeof AGENT_STATUS_KEYS];
 
-export { ADDONS, ADDON_KEYS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_STATUS_KEYS, type AddonConfig, type AddonKey, type AdminOverviewExtras, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentPluginRecord, type AgentStatus, type AgentStatusTranslationKey, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FOUNDING_MEMBER_MAX_SLOTS, FRAMEWORKS, FRAMEWORK_KEYS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type FrameworkTranslationKey, type HermesConfig, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PLUGIN_LIMITS, PRICING, type Payment, type PaymentRail, type PaymentStatus, type PluginLimits, type PluginRegistryEntry, type PluginSource, type PluginStatus, type PluginType, type Referral, SOLANA_CONFIG, type SkaleWalletInfo, type SupportTicket, TIERS, TIER_KEYS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type TierTranslationKey, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
+export { ADDONS, ADDON_KEYS, AGENT_STATUSES, AGENT_STATUS_CONFIG, AGENT_STATUS_KEYS, AI_CREDIT_DEFAULT_MARGIN_MULTIPLIER, AI_CREDIT_MIN_CHARGE, AI_CREDIT_UNIT_USD, type AddonConfig, type AddonKey, type AdminOverviewExtras, type AdminStats, type Agent, type AgentConfig, type AgentFeature, type AgentFramework, type AgentPluginRecord, type AgentStatus, type AgentStatusTranslationKey, type AiCreditBalance, type AiCreditReservationStatus, type AiCreditSource, type AiCreditUsage, type AiCreditUsageKind, type AiModelOption, type AuthChallenge, type BYOKConfig, type BYOKProvider, BYOK_PROVIDERS, BYOK_PROVIDER_ENV_VARS, type ChannelSettings, type ChatMessage, type CustomDomain, FOUNDING_MEMBER_MAX_SLOTS, FRAMEWORKS, FRAMEWORK_KEYS, type FeatureKey, type FeatureType, type Framework, type FrameworkMeta, type FrameworkTranslationKey, HATCHER_HOSTED_MODEL_RECOMMENDATIONS, type HermesConfig, type HostedModelCategory, type HostedModelCostTier, type HostedModelRecommendation, type LLMMessage, type LLMProvider, type LLMRequest, type LLMResponse, type OpenClawBinding, type OpenClawChannel, type OpenClawChannelName, type OpenClawConfig, type OpenClawMessages, type OpenClawNativeConfig, type OpenClawSkillsConfig, PLUGIN_LIMITS, PRICING, type Payment, type PaymentRail, type PaymentStatus, type PluginLimits, type PluginRegistryEntry, type PluginSource, type PluginStatus, type PluginType, type Referral, SOLANA_CONFIG, type SkaleWalletInfo, type SupportTicket, TIERS, TIER_AI_CREDITS_MONTHLY, TIER_KEYS, TIER_ORDER, type Team, type TeamMember, type TeamRole, type TicketCategory, type TicketMessage, type TicketPriority, type TicketStatus, type TierConfig, type TierTranslationKey, type User, type UserTierKey, type WSMessage, type Workflow, type WorkflowEdge, type WorkflowNode, type WsChatMessage, type WsChatPayload, err, getAddon, getBYOKProvider, getTier, ok };
