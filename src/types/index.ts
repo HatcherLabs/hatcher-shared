@@ -296,6 +296,10 @@ export type AiCreditUsageKind =
   | 'extract'
   | 'crawl'
   | 'embedding'
+  | 'image_generation'
+  | 'video_generation'
+  | 'audio_generation'
+  | 'speech'
   | 'other';
 
 export type AiCreditReservationStatus = 'active' | 'finalized' | 'released' | 'expired';

@@ -264,7 +264,7 @@ interface SkaleWalletInfo {
 }
 type UserTierKey = 'free' | 'starter' | 'pro' | 'business' | 'founding_member';
 type AiCreditSource = 'monthly_grant' | 'upgrade_grant' | 'referral' | 'admin' | 'migration' | 'purchase_bonus';
-type AiCreditUsageKind = 'llm' | 'web_search' | 'research' | 'extract' | 'crawl' | 'embedding' | 'other';
+type AiCreditUsageKind = 'llm' | 'web_search' | 'research' | 'extract' | 'crawl' | 'embedding' | 'image_generation' | 'video_generation' | 'audio_generation' | 'speech' | 'other';
 type AiCreditReservationStatus = 'active' | 'finalized' | 'released' | 'expired';
 interface AiCreditBalance {
     balance: number;
