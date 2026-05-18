@@ -121,7 +121,7 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     category: "default",
     costTier: "low",
     context: "1M",
-    description: "Default hosted model. Fast, low-cost, and strong enough for most agent loops.",
+    description: "Default hosted model. Fast, low-cost, and routed through the best available Hatcher provider.",
     default: true
   },
   {
@@ -540,7 +540,7 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     category: "advanced",
     costTier: "medium",
     context: "2M",
-    description: "Lets OpenRouter route to an available model. Useful as a fallback, not a default."
+    description: "Lets the fallback router select an available model. Useful as a fallback, not a default."
   }
 ];
 var TIERS = {
@@ -682,7 +682,7 @@ var BYOK_PROVIDERS = [
     // instead of OpenAI-native tool_calls, breaking every agent framework
     // (OpenClaw / Hermes) silently. See AUDIT_REPORT.md
     // and docs/research/hermes-reference.md §3 for the full post-mortem.
-    // Hosted Hatcher defaults are OpenRouter-backed; Groq remains a BYOK-only option.
+    // Hosted Hatcher defaults are UsePod/OpenRouter-backed; Groq remains a BYOK-only option.
     models: [
       { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout 17B", context: "128K" },
       { id: "meta-llama/llama-4-maverick-17b-128e-instruct", name: "Llama 4 Maverick 17B", context: "128K" },
@@ -816,7 +816,7 @@ var SOLANA_CONFIG = {
   authNonceExpirySecs: 300
 };
 var PRICING = {
-  free: { usdPrice: 0, label: "Free", description: "Free baseline - 1 agent, hosted OpenRouter via AI Credits, BYOK always free" },
+  free: { usdPrice: 0, label: "Free", description: "Free baseline - 1 agent, hosted UsePod/OpenRouter via AI Credits, BYOK always free" },
   paid: { usdPrice: 0, label: "A la carte", type: "one_time", description: "Unlock features individually with tokens" }
 };
 var AGENT_STATUSES = ["active", "sleeping", "paused", "archived", "error", "killed", "restarting", "stopping"];
