@@ -173,6 +173,24 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     description: "Quick Claude option for structured assistant tasks."
   },
   {
+    id: "idle/claude-haiku-4-5",
+    name: "Claude Haiku 4.5 (IDLE)",
+    provider: "IDLE",
+    category: "fast",
+    costTier: "low",
+    context: "200K",
+    description: "Partner-hosted Claude Haiku through IDLE. Fixed 1 AI Credit per request."
+  },
+  {
+    id: "idle/claude-sonnet-4-6",
+    name: "Claude Sonnet 4.6 (IDLE)",
+    provider: "IDLE",
+    category: "balanced",
+    costTier: "medium",
+    context: "1M",
+    description: "Partner-hosted Claude Sonnet through IDLE. Fixed 3 AI Credits per request."
+  },
+  {
     id: "google/gemini-2.5-flash",
     name: "Gemini 2.5 Flash",
     provider: "Google",
@@ -646,7 +664,7 @@ var BYOK_PROVIDERS = [
     requiresApiKey: true,
     requiresBaseUrl: false,
     models: [
-      { id: "claude-sonnet-4-6", name: "Claude Sonnet 4.6", context: "200K" },
+      { id: "claude-sonnet-4-6", name: "Claude Sonnet 4.6", context: "1M" },
       { id: "claude-opus-4-6", name: "Claude Opus 4.6", context: "200K" },
       { id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5", context: "200K" }
     ]
