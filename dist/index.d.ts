@@ -326,7 +326,7 @@ interface Payment {
     createdAt: Date;
     updatedAt: Date;
 }
-type BYOKProvider = 'openai' | 'anthropic' | 'google' | 'groq' | 'xai' | 'openrouter';
+type BYOKProvider = 'openai' | 'anthropic' | 'google' | 'groq' | 'xai' | 'openrouter' | 'venice';
 /** Maps each BYOK provider to the env var name expected by frameworks */
 declare const BYOK_PROVIDER_ENV_VARS: Record<BYOKProvider, string>;
 interface BYOKConfig {
