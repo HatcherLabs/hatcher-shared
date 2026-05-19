@@ -387,7 +387,7 @@ export interface Payment {
 
 // --- BYOK (Bring Your Own Key) ---
 
-export type BYOKProvider = 'openai' | 'anthropic' | 'google' | 'groq' | 'xai' | 'openrouter';
+export type BYOKProvider = 'openai' | 'anthropic' | 'google' | 'groq' | 'xai' | 'openrouter' | 'venice';
 
 /** Maps each BYOK provider to the env var name expected by frameworks */
 export const BYOK_PROVIDER_ENV_VARS: Record<BYOKProvider, string> = {
@@ -397,6 +397,7 @@ export const BYOK_PROVIDER_ENV_VARS: Record<BYOKProvider, string> = {
   groq: 'GROQ_API_KEY',
   xai: 'XAI_API_KEY',
   openrouter: 'OPENROUTER_API_KEY',
+  venice: 'VENICE_API_KEY',
 };
 
 export interface BYOKConfig {

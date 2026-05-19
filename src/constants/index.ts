@@ -752,6 +752,19 @@ export const BYOK_PROVIDERS: Array<{
       { id: 'meta-llama/llama-3.3-70b', name: 'Llama 3.3 70B (via OpenRouter)' },
     ],
   },
+  {
+    key: 'venice',
+    name: 'Venice AI',
+    description: 'Private OpenAI-compatible models via Venice',
+    requiresApiKey: true,
+    requiresBaseUrl: false,
+    defaultBaseUrl: 'https://api.venice.ai/api/v1',
+    models: [
+      { id: 'zai-org-glm-5.1', name: 'GLM 5.1', context: '200K' },
+      { id: 'venice-uncensored-1-2', name: 'Venice Uncensored 1.2', context: '128K' },
+      { id: 'deepseek-v3.2', name: 'DeepSeek V3.2', context: '160K' },
+    ],
+  },
   // Ollama removed — requires local server, incompatible with Docker-hosted agents
 ];
 
