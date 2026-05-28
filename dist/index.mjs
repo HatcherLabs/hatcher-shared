@@ -192,6 +192,42 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     description: "Partner-hosted Claude Sonnet through IDLE. Fixed 3 AI Credits per request."
   },
   {
+    id: "xiaomi/mimo-v2.5-pro",
+    name: "MiMo V2.5 Pro",
+    provider: "Xiaomi MiMo",
+    category: "advanced",
+    costTier: "low",
+    context: "1M",
+    description: "Partner-hosted Xiaomi MiMo model for long-context reasoning, coding, and launch-promo usage."
+  },
+  {
+    id: "xiaomi/mimo-v2.5",
+    name: "MiMo V2.5",
+    provider: "Xiaomi MiMo",
+    category: "balanced",
+    costTier: "low",
+    context: "1M",
+    description: "Balanced Xiaomi MiMo model for multi-step reasoning, writing, and longer conversations."
+  },
+  {
+    id: "xiaomi/mimo-v2-pro",
+    name: "MiMo V2 Pro",
+    provider: "Xiaomi MiMo",
+    category: "advanced",
+    costTier: "low",
+    context: "1M",
+    description: "Previous-generation MiMo Pro model for long-context coding and agent workflows."
+  },
+  {
+    id: "xiaomi/mimo-v2-omni",
+    name: "MiMo V2 Omni",
+    provider: "Xiaomi MiMo",
+    category: "advanced",
+    costTier: "low",
+    context: "256K",
+    description: "Multimodal MiMo model for image-aware analysis, OCR, charts, and visual context."
+  },
+  {
     id: "google/gemini-2.5-flash",
     name: "Gemini 2.5 Flash",
     provider: "Google",
