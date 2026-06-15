@@ -229,6 +229,24 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     warning: "Consumes AI Credits quickly."
   },
   {
+    id: "minimax/minimax-m3",
+    name: "MiniMax M3",
+    provider: "MiniMax",
+    category: "coding",
+    costTier: "medium",
+    context: "1M",
+    description: "Frontier MiniMax model for coding, tool use, and agent workflows via UsePod/OpenRouter."
+  },
+  {
+    id: "minimax/minimax-m2.7",
+    name: "MiniMax M2.7",
+    provider: "MiniMax",
+    category: "balanced",
+    costTier: "medium",
+    context: "200K",
+    description: "Balanced MiniMax model for agent chat, writing, and tool workflows via UsePod/OpenRouter."
+  },
+  {
     id: "acedata/claude-sonnet-4-20250514",
     name: "Claude Sonnet 4 (AceData)",
     provider: "AceData",
