@@ -568,7 +568,7 @@ declare const AI_CREDIT_DEFAULT_MARGIN_MULTIPLIER = 1;
 declare const AI_CREDIT_MIN_CHARGE = 1;
 declare const TIER_AI_CREDITS_MONTHLY: Record<UserTierKey, number>;
 type HostedModelCategory = 'default' | 'fast' | 'balanced' | 'coding' | 'premium' | 'advanced';
-type HostedModelCostTier = 'free' | 'low' | 'medium' | 'high' | 'premium';
+type HostedModelCostTier = 'free' | 'low' | 'medium' | 'high' | 'premium' | 'variable';
 interface HostedModelRecommendation {
     id: string;
     name: string;

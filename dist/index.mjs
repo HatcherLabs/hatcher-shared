@@ -274,24 +274,6 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     description: "Balanced Xiaomi MiMo model for multi-step reasoning, writing, and longer conversations."
   },
   {
-    id: "xiaomi/mimo-v2-pro",
-    name: "MiMo V2 Pro",
-    provider: "Xiaomi MiMo",
-    category: "advanced",
-    costTier: "low",
-    context: "1M",
-    description: "Previous-generation MiMo Pro model for long-context coding and agent workflows."
-  },
-  {
-    id: "xiaomi/mimo-v2-omni",
-    name: "MiMo V2 Omni",
-    provider: "Xiaomi MiMo",
-    category: "advanced",
-    costTier: "low",
-    context: "256K",
-    description: "Multimodal MiMo model for image-aware analysis, OCR, charts, and visual context."
-  },
-  {
     id: "acedata/claude-opus-4-8",
     name: "Claude Opus 4.8 (AceData)",
     provider: "AceData",
@@ -329,16 +311,6 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     costTier: "low",
     context: "200K",
     description: "Fast Claude option through AceData for extraction, classification, and lightweight chat.",
-    warning: "Uses estimated AI Credits because AceData exposes costs in their usage console, not in chat responses."
-  },
-  {
-    id: "acedata/gpt-5.5",
-    name: "GPT-5.5 (AceData)",
-    provider: "AceData",
-    category: "premium",
-    costTier: "high",
-    context: "1.05M",
-    description: "Partner-hosted OpenAI-compatible GPT-5.5 through AceData, with OpenRouter fallback when needed.",
     warning: "Uses estimated AI Credits because AceData exposes costs in their usage console, not in chat responses."
   },
   {
@@ -569,22 +541,14 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     warning: "Consumes AI Credits quickly."
   },
   {
-    id: "x-ai/grok-4.1-fast",
-    name: "Grok 4.1 Fast",
+    id: "x-ai/grok-4.5",
+    name: "Grok 4.5",
     provider: "xAI",
-    category: "fast",
-    costTier: "low",
-    context: "2M",
-    description: "Fast Grok model with very large context."
-  },
-  {
-    id: "x-ai/grok-code-fast-1",
-    name: "Grok Code Fast 1",
-    provider: "xAI",
-    category: "coding",
-    costTier: "medium",
-    context: "256K",
-    description: "xAI coding model tuned for fast code generation."
+    category: "premium",
+    costTier: "high",
+    context: "500K",
+    description: "Current Grok model for reasoning, coding, and multimodal agent workflows.",
+    warning: "The current UsePod marketplace route can report additional provider-side tokens. Monitor AI Credit usage."
   },
   {
     id: "mistralai/mistral-small-2603",
@@ -639,6 +603,132 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     costTier: "low",
     context: "256K",
     description: "Low-cost NVIDIA model for lightweight workflows."
+  },
+  {
+    id: "virtuals/anthropic-claude-fable-5",
+    name: "Claude Fable 5",
+    provider: "Virtuals",
+    category: "advanced",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute Anthropic route for autonomous knowledge work, coding, and multimodal inputs."
+  },
+  {
+    id: "virtuals/e2ee-deepseek-v4-flash",
+    name: "DeepSeek V4 Flash (E2EE)",
+    provider: "Virtuals",
+    category: "fast",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals provider-side TEE with hardware attestation; Hatcher still processes and forwards the request."
+  },
+  {
+    id: "virtuals/openai-gpt-56-luna",
+    name: "GPT-5.6 Luna",
+    provider: "Virtuals",
+    category: "fast",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute cost-efficient GPT-5.6 route for high-volume and latency-sensitive tasks."
+  },
+  {
+    id: "virtuals/openai-gpt-56-luna-pro",
+    name: "GPT-5.6 Luna Pro",
+    provider: "Virtuals",
+    category: "advanced",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute GPT-5.6 Luna route with the provider pro reasoning mode."
+  },
+  {
+    id: "virtuals/openai-gpt-56-sol",
+    name: "GPT-5.6 Sol",
+    provider: "Virtuals",
+    category: "premium",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute flagship GPT-5.6 route for complex reasoning, coding, and agentic workflows."
+  },
+  {
+    id: "virtuals/openai-gpt-56-sol-pro",
+    name: "GPT-5.6 Sol Pro",
+    provider: "Virtuals",
+    category: "premium",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute GPT-5.6 Sol route with the provider pro reasoning mode."
+  },
+  {
+    id: "virtuals/openai-gpt-56-terra",
+    name: "GPT-5.6 Terra",
+    provider: "Virtuals",
+    category: "balanced",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute balanced GPT-5.6 route for everyday coding, reasoning, and agent tasks."
+  },
+  {
+    id: "virtuals/openai-gpt-56-terra-pro",
+    name: "GPT-5.6 Terra Pro",
+    provider: "Virtuals",
+    category: "advanced",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute GPT-5.6 Terra route with the provider pro reasoning mode."
+  },
+  {
+    id: "virtuals/x-ai-grok-4-5",
+    name: "Grok 4.5",
+    provider: "Virtuals",
+    category: "premium",
+    costTier: "variable",
+    context: "500K",
+    description: "Virtuals Compute Grok route for coding, knowledge work, and STEM-heavy agent tasks."
+  },
+  {
+    id: "virtuals/moonshotai-kimi-k2-5",
+    name: "Kimi K2 5",
+    provider: "Virtuals",
+    category: "balanced",
+    costTier: "variable",
+    context: "256K",
+    description: "Virtuals Compute Kimi model for general agent work, routed with the platform Virtuals key."
+  },
+  {
+    id: "virtuals/moonshotai-kimi-k2-6",
+    name: "Kimi K2 6",
+    provider: "Virtuals",
+    category: "advanced",
+    costTier: "variable",
+    context: "256K",
+    description: "Virtuals Compute Kimi variant for analysis-heavy prompts and longer planning loops."
+  },
+  {
+    id: "virtuals/moonshotai-kimi-k2-7-code",
+    name: "Kimi K2 7 Code",
+    provider: "Virtuals",
+    category: "coding",
+    costTier: "variable",
+    context: "256K",
+    description: "Virtuals Compute coding-oriented Kimi route for repo analysis and implementation tasks."
+  },
+  {
+    id: "virtuals/deepseek-deepseek-v3-2",
+    name: "DeepSeek V3.2",
+    provider: "Virtuals",
+    category: "advanced",
+    costTier: "variable",
+    context: "160K",
+    description: "Virtuals Compute DeepSeek route for reasoning and structured task decomposition."
+  },
+  {
+    id: "virtuals/google-gemini-3-flash-preview",
+    name: "Gemini 3 Flash Preview",
+    provider: "Virtuals",
+    category: "fast",
+    costTier: "variable",
+    context: "256K",
+    description: "Virtuals Compute Gemini route for quick responses and multimodal-adjacent workflows."
   },
   {
     id: "openai/gpt-5.3-codex",
