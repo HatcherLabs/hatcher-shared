@@ -11,6 +11,23 @@ test('hosted model ids remain unique', () => {
   assert.equal(modelsById.size, HATCHER_HOSTED_MODEL_RECOMMENDATIONS.length);
 });
 
+test('latest verified models are exposed on the Hatcher route', () => {
+  const expected = new Map([
+    ['openai/gpt-5.6-luna', '1.05M'],
+    ['openai/gpt-5.6-terra', '1.05M'],
+    ['openai/gpt-5.6-sol', '1.05M'],
+    ['anthropic/claude-sonnet-5', '1M'],
+    ['anthropic/claude-fable-5', '1M'],
+    ['google/gemini-3.5-flash', '1.05M'],
+    ['z-ai/glm-5.2', '1.05M'],
+    ['qwen/qwen3.7-plus', '1M'],
+  ]);
+
+  for (const [id, context] of expected) {
+    assert.equal(modelsById.get(id)?.context, context, `${id} should expose its verified context label`);
+  }
+});
+
 test('stale selectable partner and xAI ids are removed', () => {
   const staleIds = [
     'xiaomi/mimo-v2-pro',
@@ -42,6 +59,7 @@ test('current direct Grok model replaces retired xAI options', () => {
 test('Virtuals fallback catalog matches the current no-Llama set', () => {
   const expectedIds = [
     'virtuals/anthropic-claude-fable-5',
+    'virtuals/anthropic-claude-sonnet-5',
     'virtuals/e2ee-deepseek-v4-flash',
     'virtuals/openai-gpt-56-luna',
     'virtuals/openai-gpt-56-luna-pro',
@@ -55,6 +73,8 @@ test('Virtuals fallback catalog matches the current no-Llama set', () => {
     'virtuals/moonshotai-kimi-k2-7-code',
     'virtuals/deepseek-deepseek-v3-2',
     'virtuals/google-gemini-3-flash-preview',
+    'virtuals/google-gemini-3-5-flash',
+    'virtuals/z-ai-glm-5-2',
   ];
   const actualIds = HATCHER_HOSTED_MODEL_RECOMMENDATIONS
     .filter((model) => model.provider === 'Virtuals')
@@ -69,6 +89,7 @@ test('Virtuals fallback catalog matches the current no-Llama set', () => {
 test('new Virtuals frontier models expose verified context labels', () => {
   const oneMillionContextIds = [
     'virtuals/anthropic-claude-fable-5',
+    'virtuals/anthropic-claude-sonnet-5',
     'virtuals/e2ee-deepseek-v4-flash',
     'virtuals/openai-gpt-56-luna',
     'virtuals/openai-gpt-56-luna-pro',
@@ -76,6 +97,8 @@ test('new Virtuals frontier models expose verified context labels', () => {
     'virtuals/openai-gpt-56-sol-pro',
     'virtuals/openai-gpt-56-terra',
     'virtuals/openai-gpt-56-terra-pro',
+    'virtuals/google-gemini-3-5-flash',
+    'virtuals/z-ai-glm-5-2',
   ];
 
   for (const id of oneMillionContextIds) {

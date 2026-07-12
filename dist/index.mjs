@@ -441,6 +441,15 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     description: "Higher quality Gemini option for complex reasoning."
   },
   {
+    id: "google/gemini-3.5-flash",
+    name: "Gemini 3.5 Flash",
+    provider: "Google",
+    category: "balanced",
+    costTier: "medium",
+    context: "1.05M",
+    description: "Current Gemini Flash model for responsive multimodal and long-context agent work."
+  },
+  {
     id: "qwen/qwen3.5-flash-02-23",
     name: "Qwen3.5 Flash",
     provider: "Qwen",
@@ -520,6 +529,15 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     costTier: "high",
     context: "1M",
     description: "Higher quality Qwen option for more complex reasoning tasks."
+  },
+  {
+    id: "qwen/qwen3.7-plus",
+    name: "Qwen3.7 Plus",
+    provider: "Qwen",
+    category: "balanced",
+    costTier: "medium",
+    context: "1M",
+    description: "New Qwen model for cost-efficient long-context reasoning, coding, and tool use."
   },
   {
     id: "qwen/qwen3-max",
@@ -612,6 +630,15 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     costTier: "variable",
     context: "1M",
     description: "Virtuals Compute Anthropic route for autonomous knowledge work, coding, and multimodal inputs."
+  },
+  {
+    id: "virtuals/anthropic-claude-sonnet-5",
+    name: "Claude Sonnet 5",
+    provider: "Virtuals",
+    category: "balanced",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute Sonnet route for coding, writing, reasoning, and agent workflows."
   },
   {
     id: "virtuals/e2ee-deepseek-v4-flash",
@@ -731,6 +758,24 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     description: "Virtuals Compute Gemini route for quick responses and multimodal-adjacent workflows."
   },
   {
+    id: "virtuals/google-gemini-3-5-flash",
+    name: "Gemini 3.5 Flash",
+    provider: "Virtuals",
+    category: "fast",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute Gemini route for responsive multimodal and long-context agent tasks."
+  },
+  {
+    id: "virtuals/z-ai-glm-5-2",
+    name: "GLM 5.2",
+    provider: "Virtuals",
+    category: "advanced",
+    costTier: "variable",
+    context: "1M",
+    description: "Virtuals Compute GLM route for large-context reasoning, coding, and planning."
+  },
+  {
     id: "openai/gpt-5.3-codex",
     name: "GPT-5.3 Codex",
     provider: "OpenAI",
@@ -776,6 +821,15 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     description: "Higher quality GLM model for reasoning and planning."
   },
   {
+    id: "z-ai/glm-5.2",
+    name: "GLM 5.2",
+    provider: "Z.ai",
+    category: "balanced",
+    costTier: "medium",
+    context: "1.05M",
+    description: "Current GLM model with a large context window for reasoning, coding, and planning."
+  },
+  {
     id: "openai/gpt-5.4",
     name: "GPT-5.4",
     provider: "OpenAI",
@@ -793,6 +847,25 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     context: "1M",
     description: "Most expensive Claude option for difficult reasoning.",
     warning: "Consumes AI Credits quickly. Show a confirmation before saving as default."
+  },
+  {
+    id: "anthropic/claude-sonnet-5",
+    name: "Claude Sonnet 5",
+    provider: "Anthropic",
+    category: "premium",
+    costTier: "high",
+    context: "1M",
+    description: "Current Sonnet model for reliable coding, writing, reasoning, and agent workflows."
+  },
+  {
+    id: "anthropic/claude-fable-5",
+    name: "Claude Fable 5",
+    provider: "Anthropic",
+    category: "advanced",
+    costTier: "premium",
+    context: "1M",
+    description: "Frontier Claude model for autonomous knowledge work, complex coding, and multimodal inputs.",
+    warning: "Premium model. Consumes AI Credits quickly."
   },
   {
     id: "openai/gpt-5.5",
@@ -813,6 +886,34 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     context: "1.05M",
     description: "Highest-cost OpenAI option for rare, high-stakes tasks.",
     warning: "Consumes AI Credits very quickly. Keep hidden behind an explicit advanced toggle."
+  },
+  {
+    id: "openai/gpt-5.6-luna",
+    name: "GPT-5.6 Luna",
+    provider: "OpenAI",
+    category: "fast",
+    costTier: "medium",
+    context: "1.05M",
+    description: "Cost-efficient GPT-5.6 variant for high-volume and latency-sensitive agent tasks."
+  },
+  {
+    id: "openai/gpt-5.6-terra",
+    name: "GPT-5.6 Terra",
+    provider: "OpenAI",
+    category: "balanced",
+    costTier: "high",
+    context: "1.05M",
+    description: "Balanced GPT-5.6 variant for everyday coding, reasoning, and agent workflows."
+  },
+  {
+    id: "openai/gpt-5.6-sol",
+    name: "GPT-5.6 Sol",
+    provider: "OpenAI",
+    category: "premium",
+    costTier: "premium",
+    context: "1.05M",
+    description: "Flagship GPT-5.6 variant for complex reasoning, coding, and agentic workflows.",
+    warning: "Premium model. Monitor AI Credit usage on long tasks."
   },
   {
     id: "meta-llama/llama-4-scout-17b-16e-instruct",
