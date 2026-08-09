@@ -33,7 +33,7 @@ export interface User {
 // --- Agent ---
 
 export type AgentStatus = 'active' | 'sleeping' | 'paused' | 'archived' | 'killed' | 'error' | 'restarting' | 'stopping';
-export type AgentFramework = 'openclaw' | 'hermes' | 'custom';
+export type AgentFramework = 'openclaw' | 'hermes' | 'ironclaw' | 'custom';
 export type Framework = AgentFramework;
 
 // ── OpenClaw Native Config Types (matches real openclaw.json) ──

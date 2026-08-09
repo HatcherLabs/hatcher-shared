@@ -36,6 +36,7 @@ export const ADDON_KEYS: Record<string, string> = {
 export const FRAMEWORK_KEYS = {
   openclaw: 'shared.frameworks.openclaw',
   hermes:   'shared.frameworks.hermes',
+  ironclaw: 'shared.frameworks.ironclaw',
   custom:   'shared.frameworks.custom',
 } as const;
 
