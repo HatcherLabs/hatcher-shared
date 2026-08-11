@@ -39,6 +39,7 @@ var ADDON_KEYS = {
 var FRAMEWORK_KEYS = {
   openclaw: "shared.frameworks.openclaw",
   hermes: "shared.frameworks.hermes",
+  ironclaw: "shared.frameworks.ironclaw",
   custom: "shared.frameworks.custom"
 };
 var AGENT_STATUS_KEYS = {
@@ -983,7 +984,7 @@ var TIERS = {
     messagesPerDay: 0,
     searchesPerDay: 0,
     cpuLimit: 1.5,
-    memoryMb: 2048,
+    memoryMb: 4096,
     storageMb: 25600,
     autoSleep: false,
     autoSleepMinutes: 0,
@@ -1001,8 +1002,8 @@ var TIERS = {
     aiCreditsMonthly: TIER_AI_CREDITS_MONTHLY.business,
     messagesPerDay: 0,
     searchesPerDay: 0,
-    cpuLimit: 2,
-    memoryMb: 3072,
+    cpuLimit: 4,
+    memoryMb: 6144,
     storageMb: 51200,
     autoSleep: false,
     autoSleepMinutes: 0,
@@ -1021,8 +1022,8 @@ var TIERS = {
     aiCreditsMonthly: TIER_AI_CREDITS_MONTHLY.founding_member,
     messagesPerDay: 0,
     searchesPerDay: 0,
-    cpuLimit: 2,
-    memoryMb: 4096,
+    cpuLimit: 4,
+    memoryMb: 6144,
     storageMb: 40960,
     autoSleep: false,
     autoSleepMinutes: 0,
@@ -1194,6 +1195,20 @@ var FRAMEWORKS = {
     chatEndpoint: "/v1/chat/completions",
     features: ["Persistent memory & learning", "40+ built-in tools", "Skills system", "Multi-provider LLM support"],
     docsUrl: "https://hermes-agent.nousresearch.com"
+  },
+  ironclaw: {
+    key: "ironclaw",
+    name: "IronClaw",
+    description: "Security-first AI agent runtime written in Rust, with sandboxed tools and private persistent memory.",
+    translationKey: FRAMEWORK_KEYS.ironclaw,
+    complexity: "intermediate",
+    bestFor: "Privacy-conscious agents, isolated tools, durable local state",
+    dockerImage: "nearaidev/ironclaw:1.1.0@sha256:fcb3f095b98a8a70873222050cfe60df2a410088a34a6e39a2ad8674e031efc8",
+    port: 3e3,
+    healthEndpoint: "/healthz",
+    chatEndpoint: "/api/v1/responses",
+    features: ["Rust security-first runtime", "WASM tool sandboxing", "Private persistent memory", "OpenAI-compatible Responses API"],
+    docsUrl: "https://docs.ironclaw.com"
   },
   custom: {
     key: "custom",

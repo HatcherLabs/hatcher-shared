@@ -21,7 +21,7 @@ interface User {
     createdAt: Date;
 }
 type AgentStatus = 'active' | 'sleeping' | 'paused' | 'archived' | 'killed' | 'error' | 'restarting' | 'stopping';
-type AgentFramework = 'openclaw' | 'hermes' | 'custom';
+type AgentFramework = 'openclaw' | 'hermes' | 'ironclaw' | 'custom';
 type Framework = AgentFramework;
 /** All valid OpenClaw channel identifiers */
 type OpenClawChannelName = 'telegram' | 'discord' | 'whatsapp' | 'slack' | 'signal' | 'irc' | 'googlechat' | 'msteams' | 'mattermost' | 'line' | 'matrix' | 'nostr' | 'twitch' | 'feishu' | 'nextcloud-talk' | 'synology-chat' | 'tlon' | 'zalo' | 'bluebubbles';
@@ -696,6 +696,7 @@ declare const ADDON_KEYS: Record<string, string>;
 declare const FRAMEWORK_KEYS: {
     readonly openclaw: "shared.frameworks.openclaw";
     readonly hermes: "shared.frameworks.hermes";
+    readonly ironclaw: "shared.frameworks.ironclaw";
     readonly custom: "shared.frameworks.custom";
 };
 type FrameworkTranslationKey = (typeof FRAMEWORK_KEYS)[keyof typeof FRAMEWORK_KEYS];
