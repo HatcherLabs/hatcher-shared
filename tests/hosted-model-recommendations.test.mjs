@@ -56,62 +56,11 @@ test('current direct Grok model replaces retired xAI options', () => {
   });
 });
 
-test('Virtuals fallback catalog matches the current no-Llama set', () => {
-  const expectedIds = [
-    'virtuals/anthropic-claude-fable-5',
-    'virtuals/anthropic-claude-sonnet-5',
-    'virtuals/e2ee-deepseek-v4-flash',
-    'virtuals/openai-gpt-56-luna',
-    'virtuals/openai-gpt-56-luna-pro',
-    'virtuals/openai-gpt-56-sol',
-    'virtuals/openai-gpt-56-sol-pro',
-    'virtuals/openai-gpt-56-terra',
-    'virtuals/openai-gpt-56-terra-pro',
-    'virtuals/x-ai-grok-4-5',
-    'virtuals/moonshotai-kimi-k2-5',
-    'virtuals/moonshotai-kimi-k2-6',
-    'virtuals/moonshotai-kimi-k2-7-code',
-    'virtuals/deepseek-deepseek-v3-2',
-    'virtuals/google-gemini-3-flash-preview',
-    'virtuals/google-gemini-3-5-flash',
-    'virtuals/z-ai-glm-5-2',
-  ];
-  const actualIds = HATCHER_HOSTED_MODEL_RECOMMENDATIONS
-    .filter((model) => model.provider === 'Virtuals')
-    .map((model) => model.id);
-
-  assert.deepEqual(actualIds, expectedIds);
-  for (const id of expectedIds) {
-    assert.equal(modelsById.get(id)?.costTier, 'variable', `${id} must expose variable pricing`);
-  }
-});
-
-test('new Virtuals frontier models expose verified context labels', () => {
-  const oneMillionContextIds = [
-    'virtuals/anthropic-claude-fable-5',
-    'virtuals/anthropic-claude-sonnet-5',
-    'virtuals/e2ee-deepseek-v4-flash',
-    'virtuals/openai-gpt-56-luna',
-    'virtuals/openai-gpt-56-luna-pro',
-    'virtuals/openai-gpt-56-sol',
-    'virtuals/openai-gpt-56-sol-pro',
-    'virtuals/openai-gpt-56-terra',
-    'virtuals/openai-gpt-56-terra-pro',
-    'virtuals/google-gemini-3-5-flash',
-    'virtuals/z-ai-glm-5-2',
-  ];
-
-  for (const id of oneMillionContextIds) {
-    assert.equal(modelsById.get(id)?.context, '1M');
-  }
-  assert.equal(modelsById.get('virtuals/x-ai-grok-4-5')?.context, '500K');
-  for (const id of [
-    'virtuals/moonshotai-kimi-k2-5',
-    'virtuals/moonshotai-kimi-k2-6',
-    'virtuals/moonshotai-kimi-k2-7-code',
-    'virtuals/google-gemini-3-flash-preview',
-  ]) {
-    assert.equal(modelsById.get(id)?.context, '256K');
-  }
-  assert.equal(modelsById.get('virtuals/deepseek-deepseek-v3-2')?.context, '160K');
+test('Virtuals Compute models are retired from hosted inference', () => {
+  assert.equal(
+    HATCHER_HOSTED_MODEL_RECOMMENDATIONS.some(
+      (model) => model.provider === 'Virtuals' || model.id.startsWith('virtuals/'),
+    ),
+    false,
+  );
 });
