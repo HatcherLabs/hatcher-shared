@@ -21,6 +21,7 @@ test('latest verified models are exposed on the Hatcher route', () => {
     ['google/gemini-3.5-flash', '1.05M'],
     ['z-ai/glm-5.2', '1.05M'],
     ['qwen/qwen3.7-plus', '1M'],
+    ['x-ai/grok-4.6', '500K'],
   ]);
 
   for (const [id, context] of expected) {
@@ -44,6 +45,15 @@ test('stale selectable partner and xAI ids are removed', () => {
 });
 
 test('current direct Grok model replaces retired xAI options', () => {
+  assert.deepEqual(modelsById.get('x-ai/grok-4.6'), {
+    id: 'x-ai/grok-4.6',
+    name: 'Grok 4.6',
+    provider: 'xAI',
+    category: 'premium',
+    costTier: 'high',
+    context: '500K',
+    description: 'xAI flagship model for coding, agentic tasks, reasoning, and multimodal workflows.',
+  });
   assert.deepEqual(modelsById.get('x-ai/grok-4.5'), {
     id: 'x-ai/grok-4.5',
     name: 'Grok 4.5',

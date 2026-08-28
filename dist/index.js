@@ -611,6 +611,15 @@ var HATCHER_HOSTED_MODEL_RECOMMENDATIONS = [
     warning: "Consumes AI Credits quickly."
   },
   {
+    id: "x-ai/grok-4.6",
+    name: "Grok 4.6",
+    provider: "xAI",
+    category: "premium",
+    costTier: "high",
+    context: "500K",
+    description: "xAI flagship model for coding, agentic tasks, reasoning, and multimodal workflows."
+  },
+  {
     id: "x-ai/grok-4.5",
     name: "Grok 4.5",
     provider: "xAI",
@@ -1029,6 +1038,7 @@ var BYOK_PROVIDERS = [
     requiresApiKey: true,
     requiresBaseUrl: false,
     models: [
+      { id: "grok-4.6", name: "Grok 4.6", context: "500K" },
       { id: "grok-3", name: "Grok 3", context: "128K" },
       { id: "grok-3-mini", name: "Grok 3 Mini", context: "128K" },
       { id: "grok-2", name: "Grok 2", context: "128K" }
